@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useBoolean } from "../../hooks/use-boolean";
 import axiosInstance, { endpoints } from "../../services/axios";
 import { get } from "lodash";
