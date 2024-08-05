@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect } from "react";
 import { Form, Input, Button, Space, Card, DatePicker, Flex, message, Typography, Row, Col } from "antd";
-import { BooleanReturnType, useBoolean } from "../../../../hooks/use-boolean";
+import { BooleanReturnType, useBoolean } from "../../../hooks/use-boolean";
 import dayjs from "dayjs";
 import { BsPlusCircle } from "react-icons/bs";
 import { MdCheck, MdEdit } from "react-icons/md";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axiosInstance, { endpoints } from "../../../../services/axios";
+import axiosInstance, { endpoints } from "../../../services/axios";
 
 const SurveyForm = ({ survey, questionBool }: { survey: any; questionBool: BooleanReturnType }) => {
   const [form] = Form.useForm();

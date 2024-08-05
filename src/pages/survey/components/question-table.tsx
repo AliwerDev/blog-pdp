@@ -15,6 +15,7 @@ import { IQuestion, ISurvey } from "models";
 import { BooleanReturnType } from "hooks/use-boolean";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance, { endpoints } from "services/axios";
+import { QUESTION_TYPES_TITLES } from "utils/constants";
 
 interface RowContextProps {
   setActivatorNodeRef?: (element: HTMLElement | null) => void;
@@ -79,7 +80,7 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
     () => [
       { key: "sort", align: "center", title: <RiDragDropLine />, width: 40, render: () => <DragHandle /> },
       { title: "Text", dataIndex: "text" },
-      { title: "Turi", dataIndex: "type", width: 180 },
+      { title: "Turi", dataIndex: "type", width: 180, render: (value: string) => get(QUESTION_TYPES_TITLES, value) },
       {
         title: "",
         align: "right",

@@ -1,19 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useBoolean } from "../../../hooks/use-boolean";
-import axiosInstance, { endpoints } from "../../../services/axios";
+import { useBoolean } from "../../hooks/use-boolean";
+import axiosInstance, { endpoints } from "../../services/axios";
 import { get } from "lodash";
-import { MdEdit, MdOutlineDeleteOutline } from "react-icons/md";
+import { MdEdit, MdOutlineDeleteOutline, MdPublish } from "react-icons/md";
 import { BsThreeDotsVertical } from "react-icons/bs";
-
 import dayjs from "dayjs";
 import { App, Button, Dropdown, Flex, Menu, Table, Typography } from "antd";
+import AddEditSurveyDialog from "./components/add-edit-dialog";
+
 import MenuItem from "antd/es/menu/MenuItem";
 import Link from "antd/es/typography/Link";
-import AddEditSurveyDialog from "./components/add-edit-dialog";
+import { ISurvey } from "models";
 
 const SurveysPage = () => {
   const modalBool = useBoolean();
-  const { modal } = App.useApp();
+  const { modal, message } = App.useApp();
   const queryClient = useQueryClient();
 
   const { data: surveysData } = useQuery({
@@ -22,21 +23,38 @@ const SurveysPage = () => {
   });
   const surveys: any[] = get(surveysData, "data.data", []);
 
-  const { mutate: handleDelete } = useMutation({
-    mutationFn: async (surveyId: string) => await axiosInstance.delete(endpoints.survey.delete(surveyId)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["surveys-list"] });
-    },
-  });
-
-  const showConfirmationModal = (id: string) => () => {
+  const confirmDelete = (surveyId: string) => () => {
     modal.confirm({
-      title: "Delete the survey",
-      content: "Are you sure you want to delete?",
-      onOk: () => handleDelete(id),
-      onCancel: () => {},
-      okText: "Yes",
-      cancelText: "No",
+      title: "So'rovnomani o'chirib tashlash",
+      content: "So'rovnoma o'chirilgandan so'ng uni qayta tiklay olmaysiz. Haqiqatan ham oʻchirib tashlamoqchimisiz?",
+      onOk: async () =>
+        await axiosInstance
+          .delete(endpoints.survey.delete(surveyId))
+          .then(() => {
+            queryClient.invalidateQueries({ queryKey: ["surveys-list"] });
+            message.success("So'rovnoma muvaffaqqiyatli o'chirildi!");
+          })
+          .catch(() => ""),
+
+      okText: "Ha",
+      cancelText: "Yo'q",
+    });
+  };
+
+  const confirmPublish = (surveyId: string) => () => {
+    modal.confirm({
+      title: "So‘rovnomani chop etish",
+      content: "So‘rovnoma chop etilgandan keyin uni tahrirlay olmaysiz. Haqiqatan ham chop etmoqchimisiz?",
+      onOk: async () =>
+        await axiosInstance
+          .post(endpoints.survey.publish(surveyId))
+          .then(() => {
+            queryClient.invalidateQueries({ queryKey: ["surveys-list"] });
+            message.success("So'rovnoma muvaffaqqiyatli chop etildi!");
+          })
+          .catch(() => ""),
+      okText: "Ha",
+      cancelText: "Yo'q",
     });
   };
 
@@ -52,21 +70,33 @@ const SurveysPage = () => {
       title: "Name",
       dataIndex: "title",
       key: "title",
+      ellipsis: true,
       render: (value: any, row: any) => <Link href={`/survey/${row.id}`}>{value}</Link>,
     },
     {
       title: "Boshlanish vaqti",
       dataIndex: "startTime",
-      width: 200,
+      width: 180,
       key: "startTime",
       render: (value: any) => dayjs(value).format("DD MMM YYYY HH:mm"),
     },
     {
       title: "Tugash vaqti",
       dataIndex: "endTime",
-      width: 200,
+      width: 180,
       key: "endTime",
       render: (value: any) => dayjs(value).format("DD MMM YYYY HH:mm"),
+    },
+    {
+      title: "Chop etish",
+      dataIndex: "published",
+      width: 150,
+      key: "published",
+      render: (value: boolean, row: ISurvey) => (
+        <Button onClick={confirmPublish(row.id)} disabled={value} type="dashed" icon={<MdPublish />}>
+          {value ? "Chop etilgan" : "Chop etish"}
+        </Button>
+      ),
     },
     {
       title: "",
@@ -74,7 +104,7 @@ const SurveysPage = () => {
       key: "id",
       align: "right" as "right",
       width: 80,
-      render: (_: any, row: any) => (
+      render: (_: any, row: ISurvey) => (
         <Dropdown
           dropdownRender={() => (
             <Menu>
@@ -86,7 +116,7 @@ const SurveysPage = () => {
               >
                 Taxrirlash
               </MenuItem>
-              <MenuItem onClick={showConfirmationModal(row.id)} danger icon={<MdOutlineDeleteOutline />}>
+              <MenuItem onClick={confirmDelete(row.id)} danger icon={<MdOutlineDeleteOutline />}>
                 O'chirish
               </MenuItem>
             </Menu>
@@ -102,7 +132,7 @@ const SurveysPage = () => {
   return (
     <div className="p-2">
       <Flex align="center" justify="space-between" className="my-3">
-        <Typography.Title className="mt-0" level={3}>
+        <Typography.Title className="mt-0" level={4}>
           So'rovnomalar
         </Typography.Title>
         <Button type="primary" onClick={() => modalBool.onTrue()}>

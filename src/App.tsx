@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { App as AntdApp } from "antd";
 
-import Router from "./routes/sections";
+import Router from "./routes";
 import AntProvider from "theme/ant-provider";
 
 // ----------------------------------------------------------------------

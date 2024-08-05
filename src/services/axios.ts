@@ -39,6 +39,7 @@ export const endpoints = {
   survey: {
     list: "/staff/v1/survey/get-all",
     add: "/staff/v1/survey/add",
+    publish: (id: string) => `/staff/v1/bitrix-chat-bot/send-notification/${id}`,
     one: (id: string) => `/staff/v1/survey/get-one/${id}?withQuestions=true`,
     update: (id: string) => `/staff/v1/survey/edit/${id}`,
     delete: (id: string) => `/staff/v1/survey/delete/${id}`,

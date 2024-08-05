@@ -4,8 +4,8 @@ import { useCallback } from "react";
 import dayjs from "dayjs";
 import { Button, DatePicker, Form, Input, Modal, Space, Typography } from "antd";
 
-import axiosInstance, { endpoints } from "../../../../services/axios";
-import { BooleanReturnType } from "../../../../hooks/use-boolean";
+import axiosInstance, { endpoints } from "../../../services/axios";
+import { BooleanReturnType } from "../../../hooks/use-boolean";
 import { get } from "lodash";
 
 const AddEditSurveyDialog = ({ modalBool }: { modalBool: BooleanReturnType }) => {

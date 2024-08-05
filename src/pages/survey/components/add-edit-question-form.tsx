@@ -3,8 +3,8 @@ import { Form, Input, Button, Select, Space, Card, Checkbox, Radio, message } fr
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { filter, get, isString } from "lodash";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axiosInstance, { endpoints } from "../../../../services/axios";
-import { BooleanReturnType, useBoolean } from "../../../../hooks/use-boolean";
+import axiosInstance, { endpoints } from "../../../services/axios";
+import { BooleanReturnType, useBoolean } from "../../../hooks/use-boolean";
 import { QUESTION_TYPES, QUESTION_TYPES_OPTIONS, TYPE_WITH_ANSWERS } from "utils/constants";
 
 const { Option } = Select;
