@@ -5,15 +5,9 @@ import { filter, get, isString } from "lodash";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance, { endpoints } from "../../../../services/axios";
 import { BooleanReturnType, useBoolean } from "../../../../hooks/use-boolean";
+import { QUESTION_TYPES, QUESTION_TYPES_OPTIONS, TYPE_WITH_ANSWERS } from "utils/constants";
 
 const { Option } = Select;
-
-const QUESTION_TYPES = [
-  { value: "SHORT_ANSWER", label: "Text" },
-  { value: "MULTIPLE_CHOICE", label: "Multiple Choice" },
-  { value: "CHECKBOXES", label: "Checkboxes" },
-];
-const TYPE_WITH_ANSWERS = new Set(["MULTIPLE_CHOICE", "CHECKBOXES"]);
 
 const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: any; defaultValue: any; questionBool: BooleanReturnType }) => {
   const [form] = Form.useForm();
@@ -55,15 +49,15 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
         }
 
         loadingBool.onFalse();
+        questionBool.data && questionBool.onFalse();
         message.success("Muvaffaqqiyatli saqlandi!");
         queryClient.invalidateQueries({ queryKey: ["surveys-list", survey.id] });
-        // Handle successful completion of all promises
       } catch (error) {
         console.log(error);
       }
 
       form.resetFields();
-      form.setFieldValue("type", QUESTION_TYPES[0].value);
+      form.setFieldValue("type", QUESTION_TYPES.SHORT_ANSWER);
     },
   });
 
@@ -77,7 +71,7 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
     if (defaultValue) {
       if (TYPE_WITH_ANSWERS.has(defaultValue.type) && !defaultValue.answers) defaultValue.answers = [];
       form.setFieldsValue(defaultValue);
-    } else form.setFieldValue("type", QUESTION_TYPES[0].value);
+    } else form.setFieldValue("type", QUESTION_TYPES.SHORT_ANSWER);
   }, [defaultValue, form]);
 
   return (
@@ -89,7 +83,7 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
           </Form.Item>
           <Form.Item label="Turi" name={"type"} rules={[{ required: true, message: "Missing question type" }]}>
             <Select placeholder="Select a type">
-              {QUESTION_TYPES.map((type) => (
+              {QUESTION_TYPES_OPTIONS.map((type) => (
                 <Option key={type.value} value={type.value}>
                   {type.label}
                 </Option>
@@ -104,7 +98,7 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
               <>
                 {optionFields.map(({ key, ...optionField }) => (
                   <Space key={key} style={{ display: "grid", gridTemplateColumns: "max-content auto max-content max-content" }} align="baseline">
-                    {type === "CHECKBOXES" ? <Checkbox disabled /> : <Radio disabled />}
+                    {type === QUESTION_TYPES.CHECKBOXES ? <Checkbox disabled /> : <Radio disabled />}
                     <Form.Item {...optionField} name={[optionField.name, "text"]} rules={[{ required: true, message: "Missing option text" }]}>
                       <Input
                         onKeyDown={(e) => {
@@ -118,7 +112,7 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
                       />
                     </Form.Item>
 
-                    {type !== "CHECKBOXES" && (
+                    {type !== QUESTION_TYPES.CHECKBOXES && (
                       <Form.Item {...optionField} name={[optionField.name, "hasDescription"]} valuePropName="checked" label={"Majburiy sharx"} layout="horizontal">
                         <Checkbox />
                       </Form.Item>
@@ -131,7 +125,7 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
                 ))}
                 <Form.Item className="mb-0">
                   <Button type="dashed" onClick={() => addOption()} icon={<PlusOutlined />}>
-                    Add Option
+                    Javob qoshish
                   </Button>
                 </Form.Item>
               </>

@@ -2,7 +2,7 @@ import { message } from "antd";
 import axios, { AxiosRequestConfig } from "axios";
 import { isArray } from "lodash";
 
-const BASE_URL = "http://185.74.5.104:8080/api/";
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 console.log(BASE_URL);
 

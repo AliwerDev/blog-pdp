@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@types/react-beautiful-dnd": "^13.1.8",
+    "dotenv": "^16.4.5",
     "tailwindcss": "^3.4.7"
   }
 }

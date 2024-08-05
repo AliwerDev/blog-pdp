@@ -55,7 +55,7 @@ const AddEditSurveyDialog = ({ modalBool }: { modalBool: BooleanReturnType }) =>
     >
       <Form onFinish={onFinish} form={form} layout="vertical">
         <Form.Item label="Sarlavha" name="title" rules={[{ required: true, message: "Sarlavha kiritish majburiy" }]} required>
-          <Input />
+          <Input.TextArea autoSize={{ minRows: 2 }} />
         </Form.Item>
         <Form.Item name="date" label="Boshlanish va tugash vaqti" rules={[{ required: true, message: "Vaqt tanlash majburiy" }]} required>
           <DatePicker.RangePicker showSecond={false} needConfirm={false} className="w-full" showTime />
