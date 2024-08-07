@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form, Input, Button, Select, Space, Card, Checkbox, Radio, message } from "antd";
+import { Form, Input, Button, Select, Space, Card, Checkbox, Radio, message, Flex } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { filter, get, isString } from "lodash";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -91,7 +91,6 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
             </Select>
           </Form.Item>
         </Space>
-
         {TYPE_WITH_ANSWERS.has(type) && (
           <Form.List name={"answers"}>
             {(optionFields, { add: addOption, remove: removeOption }) => (
@@ -132,15 +131,17 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
             )}
           </Form.List>
         )}
-
-        <Form.Item className="flex justify-end mb-0">
+        <Flex justify="space-between" align="center" className="mt-3">
+          <Form.Item name={"required"} className="!m-0" valuePropName="checked" label={"Majburiy"} layout="horizontal">
+            <Checkbox />
+          </Form.Item>
           <Space>
             <Button onClick={questionBool.onFalse}>Bekor qilish</Button>
             <Button type="primary" htmlType="submit">
               Saqlash
             </Button>
           </Space>
-        </Form.Item>
+        </Flex>
       </Card>
     </Form>
   );
