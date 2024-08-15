@@ -4,6 +4,7 @@ export interface ISurvey {
   description: string;
   startTime: number;
   endTime: number;
+  published: boolean;
   questions?: IQuestion[];
 }
 
