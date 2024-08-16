@@ -11,17 +11,23 @@ import AddEditSurveyDialog from "./components/add-edit-dialog";
 import MenuItem from "antd/es/menu/MenuItem";
 import Link from "antd/es/typography/Link";
 import { ISurvey } from "models";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const SurveysPage = () => {
   const modalBool = useBoolean();
   const [messageApi, contextHolder] = message.useMessage();
   const { modal } = App.useApp();
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
+  const hasToken = useBoolean();
 
   const { data: surveysData } = useQuery({
     queryKey: ["surveys-list"],
     queryFn: async () => await axiosInstance.get(endpoints.survey.list),
+    enabled: hasToken.value,
   });
+
   const surveys: any[] = get(surveysData, "data.data", []);
 
   const confirmDelete = (surveyId: string) => () => {
@@ -146,6 +152,14 @@ const SurveysPage = () => {
       ),
     },
   ];
+
+  useEffect(() => {
+    const token = searchParams.get("token");
+    if (token) {
+      hasToken.onTrue(token);
+      axiosInstance.defaults.headers.common.Authorization = token;
+    }
+  }, [hasToken, searchParams]);
 
   return (
     <div className="p-2">
