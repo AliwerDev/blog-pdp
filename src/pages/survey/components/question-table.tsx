@@ -72,6 +72,7 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
   const { mutate: deleteQuestion } = useMutation({
     mutationFn: async (id: string) => await axiosInstance.delete(endpoints.surveyQuestion.delete(id)),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["surveys-list", survey.id] });
       message.success("Muvaffaqqiyatli o'chirildi!");
     },
   });

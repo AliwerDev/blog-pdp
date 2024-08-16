@@ -88,7 +88,8 @@ const SurveysPage = () => {
       dataIndex: "title",
       key: "title",
       ellipsis: true,
-      render: (value: any, row: any) => <Link href={`/survey/${row.id}`}>{value}</Link>,
+      width: 200,
+      render: (value: any, row: any) => <Link href={`/survey/${row.id}?token=${hasToken.data}`}>{value}</Link>,
     },
     {
       title: "Boshlanish vaqti",
