@@ -1,21 +1,18 @@
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Form, Input, Button, Space, Card, DatePicker, Flex, message, Typography, Row, Col } from "antd";
-import { BooleanReturnType, useBoolean } from "../../../hooks/use-boolean";
 import dayjs from "dayjs";
-import { BsPlusCircle } from "react-icons/bs";
-import { MdCheck, MdEdit } from "react-icons/md";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance, { endpoints } from "../../../services/axios";
+import { BooleanReturnType } from "hooks/use-boolean";
 
-const SurveyForm = ({ survey, questionBool }: { survey: any; questionBool: BooleanReturnType }) => {
+const SurveyForm = ({ survey, editingBool }: { survey: any; editingBool: BooleanReturnType }) => {
   const [form] = Form.useForm();
-  const editingBool = useBoolean();
   const queryClient = useQueryClient();
 
   const { mutate: editSurvey, isPending } = useMutation({
     mutationFn: async (data: any) => await axiosInstance.put(endpoints.survey.update(survey.id), data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["surveys-list", survey.id] });
+      queryClient.invalidateQueries({ queryKey: ["survey", survey.id] });
       editingBool.onFalse();
       message.success("Muvaffaqqiyatli saqlandi!");
     },
@@ -36,14 +33,8 @@ const SurveyForm = ({ survey, questionBool }: { survey: any; questionBool: Boole
     if (survey) form.setFieldsValue({ title: survey.title, date: [dayjs(survey.startTime), dayjs(survey.endTime)] });
   }, [survey, form]);
 
-  const addQuestionEl = !questionBool.value && (
-    <Button icon={<BsPlusCircle />} type="dashed" onClick={() => questionBool.onTrue()}>
-      Savol qo'shish
-    </Button>
-  );
-
   return (
-    <Card bordered={false} className="mb-3">
+    <Card bordered={false} className="mb-3" size="small">
       <Form layout="vertical" form={form} name="survey_form" onFinish={onFinish} autoComplete="off">
         <Row gutter={[10, 10]}>
           {editingBool.value ? (
@@ -71,7 +62,7 @@ const SurveyForm = ({ survey, questionBool }: { survey: any; questionBool: Boole
               </Col>
               <Col xs={24} md={12}>
                 <Space direction="vertical">
-                  <Typography.Text type="secondary">Vaqti</Typography.Text>
+                  <Typography.Text type="secondary">Boshlanish va tugash vaqti</Typography.Text>
                   <Typography.Title className="m-0" level={5}>
                     {dayjs(survey.startTime).format("DD MMM YYYY HH:mm")} - {dayjs(survey.endTime).format("DD MMM YYYY HH:mm")}
                   </Typography.Title>
@@ -82,22 +73,14 @@ const SurveyForm = ({ survey, questionBool }: { survey: any; questionBool: Boole
         </Row>
 
         {editingBool.value && (
-          <Flex justify="flex-end" gap={15}>
-            {addQuestionEl}
-            <Button loading={isPending} type="primary" htmlType="submit" icon={<MdCheck />}>
+          <Flex justify="flex-end" gap={10}>
+            <Button onClick={editingBool.onFalse}>Bekor qilish</Button>
+            <Button loading={isPending} type="primary" htmlType="submit">
               Saqlash
             </Button>
           </Flex>
         )}
       </Form>
-      {!editingBool.value && (
-        <Flex justify="flex-end" gap={15}>
-          {addQuestionEl}
-          <Button onClick={editingBool.onTrue} type="primary" htmlType="button" icon={<MdEdit />}>
-            Taxrirlash
-          </Button>
-        </Flex>
-      )}
     </Card>
   );
 };

@@ -10,7 +10,7 @@ import { Button, Checkbox, message, Popconfirm, Space, Table, theme } from "antd
 import type { CheckboxProps, TableColumnsType } from "antd";
 import { get } from "lodash";
 import { MdDelete, MdEdit } from "react-icons/md";
-import { IQuestion, ISurvey } from "models";
+import { IAnswer, IQuestion, ISurvey } from "models";
 import { BooleanReturnType } from "hooks/use-boolean";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance, { endpoints } from "services/axios";
@@ -64,7 +64,7 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
     mutationFn: async (data: IQuestion) => await axiosInstance.put(endpoints.surveyQuestion.update(data.id), data),
     onSuccess: async () => {
       message.success("Muvaffaqqiyatli o'zgartirildi!");
-      queryClient.invalidateQueries({ queryKey: ["surveys-list", survey.id] });
+      queryClient.invalidateQueries({ queryKey: ["survey", survey.id] });
     },
   });
 
@@ -72,14 +72,14 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
     mutationFn: async (data: string[]) => await axiosInstance.post(endpoints.surveyQuestion.changeOrderIndexes, data),
     onSuccess: () => {
       message.success("Muvaffaqqiyatli o'zgartirildi!");
-      queryClient.invalidateQueries({ queryKey: ["surveys-list", survey.id] });
+      queryClient.invalidateQueries({ queryKey: ["survey", survey.id] });
     },
   });
 
   const { mutate: deleteQuestion } = useMutation({
     mutationFn: async (id: string) => await axiosInstance.delete(endpoints.surveyQuestion.delete(id)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["surveys-list", survey.id] });
+      queryClient.invalidateQueries({ queryKey: ["survey", survey.id] });
       message.success("Muvaffaqqiyatli o'chirildi!");
     },
   });
@@ -99,8 +99,6 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
   const handleRequiredChange = useCallback(
     (question: IQuestion): CheckboxProps["onChange"] => {
       return (e) => {
-        console.log(e);
-
         question.required = e.target.checked;
         editQuestion(question);
       };
@@ -114,34 +112,54 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
     }
   }, [survey]);
 
+  const expandedRowRender = (row: IQuestion) => {
+    const columns: TableColumnsType<IAnswer> = [
+      { key: "number", align: "center", title: "№", width: 40, render: (_: any, _1: any, index: number) => index + 1 },
+      { title: "Text", dataIndex: "text", key: "text" },
+      {
+        title: "Majburiy izoh",
+        dataIndex: "hasDescription",
+        key: "hasDescription",
+        width: 200,
+        render: (value: boolean) => <Checkbox disabled checked={value} />,
+      },
+    ];
+
+    return <Table rowKey={"id"} size="small" columns={columns} dataSource={row.answers} pagination={false} />;
+  };
+
   const columns: TableColumnsType<IQuestion> = useMemo(
     () => [
-      { key: "sort", align: "center", width: 40, render: () => <DragHandle /> },
-      { key: "number", align: "center", title: "N", width: 40, render: (_: any, _1: any, index: number) => index + 1 },
+      ...(!survey.published ? [{ key: "sort", align: "center" as "center", width: 40, render: () => <DragHandle /> }] : []),
+      { key: "number", align: "center", title: "№", width: 40, render: (_: any, _1: any, index: number) => index + 1 },
       { title: "Text", dataIndex: "text" },
       { title: "Turi", dataIndex: "type", width: 180, render: (value: string) => get(QUESTION_TYPES_TITLES, value) },
       {
         title: "Majburiy",
         dataIndex: "required",
         width: 120,
-        render: (value: boolean, row: IQuestion) => <Checkbox defaultChecked={value} onChange={handleRequiredChange(row)} />,
+        render: (value: boolean, row: IQuestion) => <Checkbox disabled={survey.published} checked={value} onChange={handleRequiredChange(row)} />,
       },
-      {
-        title: "",
-        align: "right",
-        width: 80,
-        dataIndex: "actions",
-        render: (_: any, row: any) => (
-          <Space size="small">
-            <Popconfirm title="Savolni ochirish" description="Bu savolni rostdan ham ochirmoqchimisiz?" onConfirm={() => deleteQuestion(row.id)} okText="Ha" cancelText="Yo'q">
-              <Button size="small" danger type="text" icon={<MdDelete />} />
-            </Popconfirm>
-            <Button size="small" onClick={() => questionBool.onTrue(row)} type="text" icon={<MdEdit />} />
-          </Space>
-        ),
-      },
+      ...(!survey.published
+        ? [
+            {
+              title: "",
+              align: "right" as "right",
+              width: 80,
+              dataIndex: "actions",
+              render: (_: any, row: any) => (
+                <Space size="small">
+                  <Popconfirm title="Savolni ochirish" description="Bu savolni rostdan ham ochirmoqchimisiz?" onConfirm={() => deleteQuestion(row.id)} okText="Ha" cancelText="Yo'q">
+                    <Button size="small" danger type="text" icon={<MdDelete />} />
+                  </Popconfirm>
+                  <Button size="small" onClick={() => questionBool.onTrue(row)} type="text" icon={<MdEdit />} />
+                </Space>
+              ),
+            },
+          ]
+        : []),
     ],
-    [questionBool, deleteQuestion, handleRequiredChange]
+    [questionBool, deleteQuestion, handleRequiredChange, survey]
   );
 
   const { token } = theme.useToken();
@@ -150,7 +168,7 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
   return (
     <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
       <SortableContext items={dataSource.map((i) => i.id)} strategy={verticalListSortingStrategy}>
-        <Table style={tableStyle} size="small" pagination={false} rowKey="id" components={{ body: { row: Row } }} columns={columns} dataSource={dataSource} />
+        <Table rowKey={"id"} expandable={survey.published ? { expandedRowRender, columnWidth: 50, rowExpandable: (row: IQuestion) => !!get(row, "answers.length") } : {}} style={tableStyle} size="small" pagination={false} components={{ body: { row: Row } }} columns={columns} dataSource={dataSource} />
       </SortableContext>
     </DndContext>
   );

@@ -49,7 +49,7 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
         loadingBool.onFalse();
         questionBool.data && questionBool.onFalse();
         message.success("Muvaffaqqiyatli saqlandi!");
-        queryClient.invalidateQueries({ queryKey: ["surveys-list", survey.id] });
+        queryClient.invalidateQueries({ queryKey: ["survey", survey.id] });
       } catch (error) {
         console.log(error);
       }
@@ -59,9 +59,9 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
     },
   });
 
-  const onFinish = ({ text, type, answers }: any) => {
+  const onFinish = ({ text, type, answers, required }: any) => {
     loadingBool.onTrue();
-    createOrEditQuestion({ data: { text, type, surveyId: survey.id }, answers });
+    createOrEditQuestion({ data: { text, type, surveyId: survey.id, required }, answers });
     console.log("Received values:", answers);
   };
 

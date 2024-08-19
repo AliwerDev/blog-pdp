@@ -1,14 +1,12 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useBoolean } from "../../hooks/use-boolean";
 import axiosInstance, { downloadFile, endpoints } from "../../services/axios";
 import { get } from "lodash";
 import { MdDownload, MdEdit, MdOutlineDeleteOutline, MdPublish } from "react-icons/md";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { BsCheckCircle, BsThreeDotsVertical } from "react-icons/bs";
 import dayjs from "dayjs";
 import { App, Button, Dropdown, Flex, Menu, message, Table, Typography } from "antd";
 import AddEditSurveyDialog from "./components/add-edit-dialog";
-
-import MenuItem from "antd/es/menu/MenuItem";
 import Link from "antd/es/typography/Link";
 import { ISurvey } from "models";
 import { useEffect } from "react";
@@ -18,14 +16,13 @@ const SurveysPage = () => {
   const modalBool = useBoolean();
   const [messageApi, contextHolder] = message.useMessage();
   const { modal } = App.useApp();
-  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const hasToken = useBoolean();
 
-  const { data: surveysData } = useQuery({
+  const { data: surveysData, refetch } = useQuery({
     queryKey: ["surveys-list"],
     queryFn: async () => await axiosInstance.get(endpoints.survey.list),
-    enabled: hasToken.value,
+    enabled: false,
   });
 
   const surveys: any[] = get(surveysData, "data.data", []);
@@ -38,7 +35,7 @@ const SurveysPage = () => {
         await axiosInstance
           .delete(endpoints.survey.delete(surveyId))
           .then(() => {
-            queryClient.invalidateQueries({ queryKey: ["surveys-list"] });
+            refetch();
             message.success("So'rovnoma muvaffaqqiyatli o'chirildi!");
           })
           .catch(() => ""),
@@ -56,7 +53,7 @@ const SurveysPage = () => {
         await axiosInstance
           .post(endpoints.survey.publish(surveyId))
           .then(() => {
-            queryClient.invalidateQueries({ queryKey: ["surveys-list"] });
+            refetch();
             message.success("So'rovnoma muvaffaqqiyatli chop etildi!");
           })
           .catch(() => ""),
@@ -72,7 +69,9 @@ const SurveysPage = () => {
       duration: 0,
     });
 
-    await downloadFile({ url: endpoints.survey.exel(survey.id), fileName: `${survey.title}.xlsx` });
+    try {
+      await downloadFile({ url: endpoints.survey.exel(survey.id), fileName: `${survey.title}.xlsx` });
+    } catch (error) {}
     messageApi.destroy();
   };
 
@@ -104,22 +103,22 @@ const SurveysPage = () => {
       render: (value: any) => dayjs(value).format("DD MMM YYYY HH:mm"),
     },
     {
-      title: "Chop etish",
-      dataIndex: "published",
+      title: "Natijalar",
+      dataIndex: "id",
       width: 150,
-      render: (value: boolean, row: ISurvey) => (
-        <Button onClick={confirmPublish(row.id)} disabled={value} type="dashed" icon={<MdPublish />}>
-          {value ? "Chop etilgan" : "Chop etish"}
+      render: (_: boolean, row: ISurvey) => (
+        <Button onClick={downloadExcel(row)} disabled={!row.published} type="dashed" icon={<MdDownload />}>
+          Yuklab olish
         </Button>
       ),
     },
     {
-      title: "Natijalar",
-      dataIndex: "id",
+      title: "Chop etish",
+      dataIndex: "published",
       width: 150,
       render: (value: boolean, row: ISurvey) => (
-        <Button onClick={downloadExcel(row)} disabled={!row.published} type="dashed" icon={<MdDownload />}>
-          Yuklash
+        <Button onClick={confirmPublish(row.id)} disabled={value} type="primary" icon={value ? <BsCheckCircle /> : <MdPublish />}>
+          {value ? "Chop etilgan" : "Chop etish"}
         </Button>
       ),
     },
@@ -132,19 +131,12 @@ const SurveysPage = () => {
       render: (_: any, row: ISurvey) => (
         <Dropdown
           dropdownRender={() => (
-            <Menu>
-              <MenuItem
-                onClick={() => {
-                  modalBool.onTrue(row);
-                }}
-                icon={<MdEdit />}
-              >
-                Taxrirlash
-              </MenuItem>
-              <MenuItem onClick={confirmDelete(row.id)} danger icon={<MdOutlineDeleteOutline />}>
-                O'chirish
-              </MenuItem>
-            </Menu>
+            <Menu
+              items={[
+                { key: "edit", label: "Tahrirlash", onClick: () => modalBool.onTrue(row), icon: <MdEdit /> },
+                { key: "delete", label: "O'chirish", onClick: confirmDelete(row.id), icon: <MdOutlineDeleteOutline />, danger: true },
+              ]}
+            />
           )}
           placement="bottomRight"
         >
@@ -159,8 +151,12 @@ const SurveysPage = () => {
     if (token) {
       hasToken.onTrue(token);
       axiosInstance.defaults.headers.common.Authorization = token;
+      console.log("all");
+
+      refetch();
     }
-  }, [hasToken, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.get("token")]);
 
   return (
     <div className="p-2">
@@ -174,9 +170,9 @@ const SurveysPage = () => {
         </Button>
       </Flex>
 
-      <Table pagination={false} dataSource={surveys} columns={columns} />
+      <Table rowKey={"id"} pagination={false} dataSource={surveys} columns={columns} />
 
-      <AddEditSurveyDialog modalBool={modalBool} />
+      <AddEditSurveyDialog refetch={refetch} modalBool={modalBool} />
     </div>
   );
 };

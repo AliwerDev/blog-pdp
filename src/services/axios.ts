@@ -15,9 +15,8 @@ axiosInstance.interceptors.response.use(
   (error) => {
     console.log(error);
 
-    if (error.response && error.response.data && error.response.data.error) {
-      typeof error.response.data.error === "string" && message.error(error.response.data.error);
-      isArray(error.response.data.message) && error.response.data.message.forEach((value: string) => message.error(value));
+    if (error.response && error.response.data && error.response.data.errors) {
+      isArray(error.response.data.errors) && error.response.data.errors.forEach((value: any) => message.error(value?.errorMsg));
     }
     return Promise.reject();
   }

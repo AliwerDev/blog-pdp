@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import dayjs from "dayjs";
 import { Button, DatePicker, Form, Input, Modal, Space, Typography } from "antd";
@@ -8,9 +8,8 @@ import axiosInstance, { endpoints } from "../../../services/axios";
 import { BooleanReturnType } from "../../../hooks/use-boolean";
 import { get } from "lodash";
 
-const AddEditSurveyDialog = ({ modalBool }: { modalBool: BooleanReturnType }) => {
+const AddEditSurveyDialog = ({ modalBool, refetch }: { modalBool: BooleanReturnType; refetch: any }) => {
   const [form] = Form.useForm();
-  const queryClient = useQueryClient();
 
   const { mutate: createOrEditHandler } = useMutation({
     mutationFn: async (data: any) => (modalBool.data ? await axiosInstance.put(endpoints.survey.update(modalBool.data.id), data) : await axiosInstance.post(endpoints.survey.add, data)),
@@ -33,7 +32,7 @@ const AddEditSurveyDialog = ({ modalBool }: { modalBool: BooleanReturnType }) =>
   const cancel = () => {
     modalBool.onFalse();
     form.resetFields();
-    queryClient.invalidateQueries({ queryKey: ["surveys-list"] });
+    refetch();
   };
 
   useEffect(() => {
