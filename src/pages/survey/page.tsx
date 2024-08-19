@@ -1,7 +1,7 @@
-import { App, Button, Flex, message, theme, Typography } from "antd";
+import { Button, Flex, message, theme, Typography } from "antd";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axiosInstance, { endpoints } from "../../services/axios";
+import axiosInstance, { downloadFile, endpoints } from "../../services/axios";
 import { get } from "lodash";
 import { useBoolean } from "hooks/use-boolean";
 import AddEditQuestionForm from "./components/add-edit-question-form";
@@ -10,18 +10,22 @@ import SurveyForm from "./components/survey-form";
 import { ISurvey } from "models";
 import { useEffect } from "react";
 import { useRouter } from "routes/hooks";
-import { MdEdit, MdPublish } from "react-icons/md";
+import { MdDownload, MdEdit, MdPublish } from "react-icons/md";
 import { BsPlusCircle } from "react-icons/bs";
+import PublishSurveyDialog from "pages/surveys/components/publish-dialog";
 
 const SurveyPage = () => {
   const router = useRouter();
   const params = useParams();
   const editingBool = useBoolean();
   const questionBool = useBoolean();
+  const publishBool = useBoolean();
   const hasToken = useBoolean();
   const [searchParams] = useSearchParams();
-  const { modal } = App.useApp();
   const queryClient = useQueryClient();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const accessToken = searchParams.get("token");
 
   const { token } = theme.useToken();
 
@@ -34,40 +38,37 @@ const SurveyPage = () => {
   const survey: ISurvey = get(data, "data.data", {});
   const editable = !survey.published;
 
-  const confirmPublish = (surveyId: string) => () => {
-    modal.confirm({
-      title: "So‘rovnomani chop etish",
-      content: "So‘rovnoma chop etilgandan keyin uni tahrirlay olmaysiz. Haqiqatan ham chop etmoqchimisiz?",
-      onOk: async () =>
-        await axiosInstance
-          .post(endpoints.survey.publish(surveyId))
-          .then(() => {
-            queryClient.invalidateQueries({ queryKey: ["survey", surveyId] });
-            message.success("So'rovnoma muvaffaqqiyatli chop etildi!");
-          })
-          .catch(() => ""),
-      okText: "Ha",
-      cancelText: "Yo'q",
+  const downloadExcel = async () => {
+    messageApi.open({
+      type: "loading",
+      content: "Natijalar yuklab olinmoqda!",
+      duration: 0,
     });
+
+    try {
+      await downloadFile({ url: endpoints.survey.exel(survey.id), fileName: `${survey.title}.xlsx` });
+    } catch (error) {}
+    messageApi.destroy();
   };
 
   useEffect(() => {
-    const token = searchParams.get("token");
-    if (token) {
-      hasToken.onTrue(token);
-      axiosInstance.defaults.headers.common.Authorization = token;
+    if (accessToken) {
+      hasToken.onTrue(accessToken);
+      axiosInstance.defaults.headers.common.Authorization = accessToken;
     } else {
       hasToken.onFalse();
       axiosInstance.defaults.headers.common.Authorization = null;
       router.back();
     }
-  }, [hasToken, router, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken]);
 
   return (
     <div className="pb-10">
+      {contextHolder}
       <Flex className="mb-4" justify="space-between" align="flex-end">
         <Typography.Title className="flex gap-2" level={4}>
-          <span className="cursor-pointer" style={{ color: token.colorSuccess }} onClick={() => router.back()}>
+          <span className="cursor-pointer" style={{ color: token.colorSuccess }} onClick={() => router.push(`/?token=${accessToken}`)}>
             So'rovnomalar
           </span>
           <span>/</span>
@@ -80,9 +81,16 @@ const SurveyPage = () => {
               Tahrirlash
             </Button>
           )}
-          <Button onClick={confirmPublish(survey.id)} disabled={!editable} type="primary" icon={editable ? <MdPublish /> : null}>
+
+          <Button onClick={() => publishBool.onTrue(survey.id)} disabled={!editable} type="primary" icon={editable ? <MdPublish /> : null}>
             {editable ? "Chop etish" : "Chop etilgan"}
           </Button>
+
+          {!editable ? (
+            <Button onClick={downloadExcel} type="dashed" icon={<MdDownload />}>
+              Natijalarni yuklab olish
+            </Button>
+          ) : null}
         </Flex>
       </Flex>
 
@@ -99,6 +107,7 @@ const SurveyPage = () => {
 
       {questionBool.value ? <AddEditQuestionForm survey={survey} questionBool={questionBool} defaultValue={questionBool.data} /> : null}
 
+      <PublishSurveyDialog modalBool={publishBool} refetch={() => queryClient.refetchQueries({ queryKey: ["surveys-list"] })} />
       <QuestionsTable survey={survey} questionBool={questionBool} />
     </div>
   );

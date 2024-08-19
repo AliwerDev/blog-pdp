@@ -7,13 +7,14 @@ import { BsCheckCircle, BsThreeDotsVertical } from "react-icons/bs";
 import dayjs from "dayjs";
 import { App, Button, Dropdown, Flex, Menu, message, Table, Typography } from "antd";
 import AddEditSurveyDialog from "./components/add-edit-dialog";
-import Link from "antd/es/typography/Link";
 import { ISurvey } from "models";
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import PublishSurveyDialog from "./components/publish-dialog";
 
 const SurveysPage = () => {
   const modalBool = useBoolean();
+  const publishBool = useBoolean();
   const [messageApi, contextHolder] = message.useMessage();
   const { modal } = App.useApp();
   const [searchParams] = useSearchParams();
@@ -45,23 +46,6 @@ const SurveysPage = () => {
     });
   };
 
-  const confirmPublish = (surveyId: string) => () => {
-    modal.confirm({
-      title: "So‘rovnomani chop etish",
-      content: "So‘rovnoma chop etilgandan keyin uni tahrirlay olmaysiz. Haqiqatan ham chop etmoqchimisiz?",
-      onOk: async () =>
-        await axiosInstance
-          .post(endpoints.survey.publish(surveyId))
-          .then(() => {
-            refetch();
-            message.success("So'rovnoma muvaffaqqiyatli chop etildi!");
-          })
-          .catch(() => ""),
-      okText: "Ha",
-      cancelText: "Yo'q",
-    });
-  };
-
   const downloadExcel = (survey: ISurvey) => async () => {
     messageApi.open({
       type: "loading",
@@ -77,7 +61,7 @@ const SurveysPage = () => {
 
   const columns = [
     {
-      title: "N",
+      title: "№",
       dataIndex: "no",
       render: (_: any, i: any, index: number) => index + 1,
       width: 50,
@@ -88,7 +72,7 @@ const SurveysPage = () => {
       key: "title",
       ellipsis: true,
       width: 200,
-      render: (value: any, row: any) => <Link href={`/survey/${row.id}?token=${hasToken.data}`}>{value}</Link>,
+      render: (value: any, row: any) => <Link to={`/survey/${row.id}?token=${hasToken.data}`}>{value}</Link>,
     },
     {
       title: "Boshlanish vaqti",
@@ -117,7 +101,7 @@ const SurveysPage = () => {
       dataIndex: "published",
       width: 150,
       render: (value: boolean, row: ISurvey) => (
-        <Button onClick={confirmPublish(row.id)} disabled={value} type="primary" icon={value ? <BsCheckCircle /> : <MdPublish />}>
+        <Button onClick={() => publishBool.onTrue(row.id)} disabled={value} type="primary" icon={value ? <BsCheckCircle /> : <MdPublish />}>
           {value ? "Chop etilgan" : "Chop etish"}
         </Button>
       ),
@@ -172,6 +156,7 @@ const SurveysPage = () => {
 
       <Table rowKey={"id"} pagination={false} dataSource={surveys} columns={columns} />
 
+      <PublishSurveyDialog refetch={refetch} modalBool={publishBool} />
       <AddEditSurveyDialog refetch={refetch} modalBool={modalBool} />
     </div>
   );

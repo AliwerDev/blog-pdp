@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { Form, Input, Button, Space, Card, DatePicker, Flex, message, Typography, Row, Col } from "antd";
+import { Form, Input, Button, Space, Card, DatePicker, Flex, Typography, Row, Col, App } from "antd";
 import dayjs from "dayjs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance, { endpoints } from "../../../services/axios";
@@ -8,10 +8,12 @@ import { BooleanReturnType } from "hooks/use-boolean";
 const SurveyForm = ({ survey, editingBool }: { survey: any; editingBool: BooleanReturnType }) => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+  const { message } = App.useApp();
 
   const { mutate: editSurvey, isPending } = useMutation({
     mutationFn: async (data: any) => await axiosInstance.put(endpoints.survey.update(survey.id), data),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["surveys-list"] });
       queryClient.invalidateQueries({ queryKey: ["survey", survey.id] });
       editingBool.onFalse();
       message.success("Muvaffaqqiyatli saqlandi!");

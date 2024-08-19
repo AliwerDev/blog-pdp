@@ -1,6 +1,6 @@
 import { message } from "antd";
 import axios from "axios";
-import { forEach, get, isArray } from "lodash";
+import { isArray } from "lodash";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -13,8 +13,6 @@ const axiosInstance = axios.create({ baseURL: BASE_URL });
 axiosInstance.interceptors.response.use(
   (res) => res,
   (error) => {
-    console.log(error);
-
     if (error.response && error.response.data && error.response.data.errors) {
       isArray(error.response.data.errors) && error.response.data.errors.forEach((value: any) => message.error(value?.errorMsg));
     }
@@ -43,22 +41,20 @@ export const downloadFile = async ({ url, autoDownload = true, fileName = "file.
     }
 
     return newUrl;
-  } catch (e: any) {
-    forEach(get(e, "response.data.errors", []), (error) => {
-      message.error(get(error, "errorMsg"));
-    });
-    return Promise.reject(e);
+  } catch (error: any) {
+    return Promise.reject(error);
   }
 };
 
 export default axiosInstance;
 
 export const endpoints = {
+  department: { list: "staff/v1/bitrix-chat-bot/department-options" },
   survey: {
     list: "/staff/v1/survey/get-all",
     add: "/staff/v1/survey/add",
+    publish: "/staff/v1/bitrix-chat-bot/send-notification",
     exel: (id: string) => `/staff/v1/survey/download-excel/${id}`,
-    publish: (id: string) => `/staff/v1/bitrix-chat-bot/send-notification/${id}`,
     one: (id: string) => `/staff/v1/survey/get-one/${id}?withQuestions=true`,
     update: (id: string) => `/staff/v1/survey/edit/${id}`,
     delete: (id: string) => `/staff/v1/survey/delete/${id}`,
