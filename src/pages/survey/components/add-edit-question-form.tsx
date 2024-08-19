@@ -21,9 +21,7 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
       const response = data.id ? await axiosInstance.put(endpoint, data) : await axiosInstance.post(endpoint, data);
       return response;
     },
-    onSuccess: () => {
-      // Handle success
-    },
+    onSuccess: () => {},
   });
 
   const { mutateAsync: deleteAnswer } = useMutation({

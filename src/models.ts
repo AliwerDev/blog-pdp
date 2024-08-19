@@ -13,6 +13,7 @@ export interface IQuestion {
   text: string;
   type: string;
   surveyId: string;
+  required: boolean;
   answers?: IAnswer[];
 }
 

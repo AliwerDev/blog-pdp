@@ -1,5 +1,5 @@
 import { theme, Typography } from "antd";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance, { endpoints } from "../../services/axios";
 import { get } from "lodash";
@@ -9,9 +9,10 @@ import QuestionsTable from "./components/question-table";
 import SurveyForm from "./components/survey-form";
 import { ISurvey } from "models";
 import { useEffect } from "react";
+import { useRouter } from "routes/hooks";
 
 const SurveyPage = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const params = useParams();
   const questionBool = useBoolean();
   const hasToken = useBoolean();
@@ -35,14 +36,14 @@ const SurveyPage = () => {
     } else {
       hasToken.onFalse();
       axiosInstance.defaults.headers.common.Authorization = null;
-      navigate("/");
+      router.back();
     }
-  }, [hasToken, navigate, searchParams]);
+  }, [hasToken, router, searchParams]);
 
   return (
     <div className="pb-10">
       <Typography.Title className="flex gap-2" level={4}>
-        <span className="cursor-pointer" style={{ color: token.colorSuccess }} onClick={() => navigate("/")}>
+        <span className="cursor-pointer" style={{ color: token.colorSuccess }} onClick={() => router.back()}>
           So'rovnomalar
         </span>
         <span>/</span>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import { HolderOutlined } from "@ant-design/icons";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { DndContext } from "@dnd-kit/core";
@@ -6,9 +6,8 @@ import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Button, message, Popconfirm, Space, Table, theme } from "antd";
-import type { TableColumnsType } from "antd";
-import { RiDragDropLine } from "react-icons/ri";
+import { Button, Checkbox, message, Popconfirm, Space, Table, theme } from "antd";
+import type { CheckboxProps, TableColumnsType } from "antd";
 import { get } from "lodash";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { IQuestion, ISurvey } from "models";
@@ -61,6 +60,14 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
   const [dataSource, setDataSource] = React.useState<IQuestion[]>(get(survey, "questions", []));
   const queryClient = useQueryClient();
 
+  const { mutate: editQuestion } = useMutation({
+    mutationFn: async (data: IQuestion) => await axiosInstance.put(endpoints.surveyQuestion.update(data.id), data),
+    onSuccess: async () => {
+      message.success("Muvaffaqqiyatli o'zgartirildi!");
+      queryClient.invalidateQueries({ queryKey: ["surveys-list", survey.id] });
+    },
+  });
+
   const { mutate: changeOrderIndexes } = useMutation({
     mutationFn: async (data: string[]) => await axiosInstance.post(endpoints.surveyQuestion.changeOrderIndexes, data),
     onSuccess: () => {
@@ -77,11 +84,48 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
     },
   });
 
+  const onDragEnd = ({ active, over }: DragEndEvent) => {
+    if (active.id !== over?.id) {
+      setDataSource((prevState) => {
+        const activeIndex = prevState.findIndex((record) => record.id === active?.id);
+        const overIndex = prevState.findIndex((record) => record.id === over?.id);
+        const updatedDataSource = arrayMove(prevState, activeIndex, overIndex);
+        changeOrderIndexes(updatedDataSource.map((i) => i.id));
+        return updatedDataSource;
+      });
+    }
+  };
+
+  const handleRequiredChange = useCallback(
+    (question: IQuestion): CheckboxProps["onChange"] => {
+      return (e) => {
+        console.log(e);
+
+        question.required = e.target.checked;
+        editQuestion(question);
+      };
+    },
+    [editQuestion]
+  );
+
+  useEffect(() => {
+    if (get(survey, "questions", [])) {
+      setDataSource(get(survey, "questions", []));
+    }
+  }, [survey]);
+
   const columns: TableColumnsType<IQuestion> = useMemo(
     () => [
-      { key: "sort", align: "center", title: <RiDragDropLine />, width: 40, render: () => <DragHandle /> },
+      { key: "sort", align: "center", width: 40, render: () => <DragHandle /> },
+      { key: "number", align: "center", title: "N", width: 40, render: (_: any, _1: any, index: number) => index + 1 },
       { title: "Text", dataIndex: "text" },
       { title: "Turi", dataIndex: "type", width: 180, render: (value: string) => get(QUESTION_TYPES_TITLES, value) },
+      {
+        title: "Majburiy",
+        dataIndex: "required",
+        width: 120,
+        render: (value: boolean, row: IQuestion) => <Checkbox defaultChecked={value} onChange={handleRequiredChange(row)} />,
+      },
       {
         title: "",
         align: "right",
@@ -97,28 +141,11 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
         ),
       },
     ],
-    [questionBool, deleteQuestion]
+    [questionBool, deleteQuestion, handleRequiredChange]
   );
 
-  const onDragEnd = ({ active, over }: DragEndEvent) => {
-    if (active.id !== over?.id) {
-      setDataSource((prevState) => {
-        const activeIndex = prevState.findIndex((record) => record.id === active?.id);
-        const overIndex = prevState.findIndex((record) => record.id === over?.id);
-        const updatedDataSource = arrayMove(prevState, activeIndex, overIndex);
-        changeOrderIndexes(updatedDataSource.map((i) => i.id));
-        return updatedDataSource;
-      });
-    }
-  };
   const { token } = theme.useToken();
   const tableStyle = { boxShadow: token.boxShadowTertiary, borderRadius: token.borderRadius, overflow: "hidden" };
-
-  useEffect(() => {
-    if (get(survey, "questions", [])) {
-      setDataSource(get(survey, "questions", []));
-    }
-  }, [survey]);
 
   return (
     <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
