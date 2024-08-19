@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Alert, Button, Flex, message, Modal, TreeSelect, Typography } from "antd";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import axiosInstance, { endpoints } from "../../../services/axios";
 import { BooleanReturnType } from "../../../hooks/use-boolean";
@@ -10,7 +10,7 @@ const PublishSurveyDialog = ({ modalBool, refetch }: { modalBool: BooleanReturnT
   const queryClient = useQueryClient();
   const [ids, setIds] = useState<string[]>([]);
 
-  const { data: departmentsData } = useQuery({
+  const { data: departmentsData, isFetching } = useQuery({
     queryKey: ["departments"],
     queryFn: async () => await axiosInstance.get(endpoints.department.list),
     enabled: modalBool.value,
@@ -18,7 +18,7 @@ const PublishSurveyDialog = ({ modalBool, refetch }: { modalBool: BooleanReturnT
 
   const departments = useMemo(() => {
     const valueLabelMapper = (list: any[]): any[] => {
-      return list.map((item) => ({ value: item.ID, key: item.ID, title: item.NAME, children: item.children ? valueLabelMapper(item.children) : undefined }));
+      return list.map((item) => ({ value: item.ID, key: item.ID, label: item.NAME, title: item.NAME, children: item.children ? valueLabelMapper(item.children) : undefined }));
     };
 
     return valueLabelMapper(get(departmentsData, "data.result", []));
@@ -63,22 +63,7 @@ const PublishSurveyDialog = ({ modalBool, refetch }: { modalBool: BooleanReturnT
     >
       <Alert className="mb-4" showIcon type="warning" message="Unutmang so‘rovnoma chop etilgandan keyin uni tahrirlay olmaysiz!" />
 
-      <TreeSelect
-        {...{
-          size: "large",
-          maxTagCount: 8,
-          listHeight: 400,
-          treeDefaultExpandedKeys: [1],
-          treeData: departments,
-          value: ids,
-          onChange: setIds,
-          treeCheckable: true,
-          placeholder: "So'rovnoma yuborish uchun departmentlarni tanlang!",
-          style: {
-            width: "100%",
-          },
-        }}
-      />
+      <TreeSelect loading={isFetching} maxTagTextLength={12} allowClear showSearch={false} treeCheckable={true} size="large" maxTagCount={8} listHeight={400} treeDefaultExpandedKeys={[1]} treeData={departments} value={ids} onChange={setIds} placeholder={"So'rovnoma yuborish uchun departmentlarni tanlang!"} style={{ width: "100%" }} />
     </Modal>
   );
 };

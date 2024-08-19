@@ -115,7 +115,7 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
   const expandedRowRender = (row: IQuestion) => {
     const columns: TableColumnsType<IAnswer> = [
       { key: "number", align: "center", title: "№", width: 40, render: (_: any, _1: any, index: number) => index + 1 },
-      { title: "Text", dataIndex: "text", key: "text" },
+      { title: "Matn", dataIndex: "text", key: "text" },
       {
         title: "Majburiy izoh",
         dataIndex: "hasDescription",
@@ -132,7 +132,7 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
     () => [
       ...(!survey.published ? [{ key: "sort", align: "center" as "center", width: 40, render: () => <DragHandle /> }] : []),
       { key: "number", align: "center", title: "№", width: 40, render: (_: any, _1: any, index: number) => index + 1 },
-      { title: "Text", dataIndex: "text" },
+      { title: "Matn", dataIndex: "text" },
       { title: "Turi", dataIndex: "type", width: 180, render: (value: string) => get(QUESTION_TYPES_TITLES, value) },
       {
         title: "Majburiy",

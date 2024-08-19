@@ -76,10 +76,10 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
     <Form layout="vertical" form={form} name="survey_form" onFinish={onFinish} autoComplete="off">
       <Card className="mb-3">
         <Space style={{ display: "grid", gridTemplateColumns: "auto 200px max-content" }} align="baseline">
-          <Form.Item name={"text"} label="Savol matni" rules={[{ required: true, message: "Missing question text" }]}>
+          <Form.Item name={"text"} label="Savol matni" rules={[{ required: true, message: "Savol matnini kiritish majburiy!" }]}>
             <Input.TextArea autoFocus autoSize={{ minRows: 2 }} placeholder="Savol kiriting" />
           </Form.Item>
-          <Form.Item label="Turi" name={"type"} rules={[{ required: true, message: "Missing question type" }]}>
+          <Form.Item label="Turi" name={"type"} rules={[{ required: true, message: "Savol turini tanlash majburiy!" }]}>
             <Select placeholder="Select a type">
               {QUESTION_TYPES_OPTIONS.map((type) => (
                 <Option key={type.value} value={type.value}>
@@ -96,7 +96,7 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
                 {optionFields.map(({ key, ...optionField }) => (
                   <Space key={key} style={{ display: "grid", gridTemplateColumns: "max-content auto max-content max-content" }} align="baseline">
                     {type === QUESTION_TYPES.CHECKBOXES ? <Checkbox disabled /> : <Radio disabled />}
-                    <Form.Item {...optionField} name={[optionField.name, "text"]} rules={[{ required: true, message: "Missing option text" }]}>
+                    <Form.Item {...optionField} name={[optionField.name, "text"]} rules={[{ required: true, message: "Javob matnini kiritish majburiy!" }]}>
                       <Input
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === "Return") {
@@ -105,7 +105,7 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
                           }
                         }}
                         autoFocus
-                        placeholder="Option"
+                        placeholder="Javob"
                       />
                     </Form.Item>
 
