@@ -20,7 +20,11 @@ const SurveysPage = () => {
   const [searchParams] = useSearchParams();
   const hasToken = useBoolean();
 
-  const { data: surveysData, refetch } = useQuery({
+  const {
+    data: surveysData,
+    refetch,
+    isFetching,
+  } = useQuery({
     queryKey: ["surveys-list"],
     queryFn: async () => await axiosInstance.get(endpoints.survey.list),
     enabled: false,
@@ -154,7 +158,7 @@ const SurveysPage = () => {
         </Button>
       </Flex>
 
-      <Table rowKey={"id"} pagination={false} dataSource={surveys} columns={columns} />
+      <Table loading={isFetching} rowKey={"id"} pagination={false} dataSource={surveys} columns={columns} />
 
       <PublishSurveyDialog refetch={refetch} modalBool={publishBool} />
       <AddEditSurveyDialog refetch={refetch} modalBool={modalBool} />

@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { Form, Input, Button, Select, Space, Card, Checkbox, Radio, message, Flex } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { filter, get, isString } from "lodash";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance, { endpoints } from "../../../services/axios";
-import { BooleanReturnType, useBoolean } from "../../../hooks/use-boolean";
+import { BooleanReturnType } from "../../../hooks/use-boolean";
 import { QUESTION_TYPES, QUESTION_TYPES_OPTIONS, TYPE_WITH_ANSWERS } from "utils/constants";
+import { IQuestion } from "models";
 
 const { Option } = Select;
 
@@ -13,56 +13,47 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
   const [form] = Form.useForm();
   const type = Form.useWatch("type", form);
   const queryClient = useQueryClient();
-  const loadingBool = useBoolean();
 
-  const { mutateAsync: createEditOrDeleteAnswer } = useMutation({
-    mutationFn: async (data: any) => {
-      const endpoint = data.id ? endpoints.surveyQuestionAnswer.update(data.id) : endpoints.surveyQuestionAnswer.add;
-      const response = data.id ? await axiosInstance.put(endpoint, data) : await axiosInstance.post(endpoint, data);
-      return response;
-    },
-    onSuccess: () => {},
-  });
+  // const { mutateAsync: createEditOrDeleteAnswer } = useMutation({
+  //   mutationFn: async (data: any) => {
+  //     const endpoint = data.id ? endpoints.surveyQuestionAnswer.update(data.id) : endpoints.surveyQuestionAnswer.add;
+  //     const response = data.id ? await axiosInstance.put(endpoint, data) : await axiosInstance.post(endpoint, data);
+  //     return response;
+  //   },
+  //   onSuccess: () => {},
+  // });
 
-  const { mutateAsync: deleteAnswer } = useMutation({
-    mutationFn: async (id: string) => await axiosInstance.delete(endpoints.surveyQuestionAnswer.delete(id)),
-  });
+  // const { mutateAsync: deleteAnswer } = useMutation({
+  //   mutationFn: async (id: string) => await axiosInstance.delete(endpoints.surveyQuestionAnswer.delete(id)),
+  // });
 
-  const { mutate: createOrEditQuestion } = useMutation({
-    mutationFn: async ({ data }: any) => (questionBool.data ? await axiosInstance.put(endpoints.surveyQuestion.update(questionBool.data.id), data) : await axiosInstance.post(endpoints.surveyQuestion.add, data)),
-    onSuccess: async (data: any, { answers = [] }: any) => {
-      const question = get(data, "data.data");
+  const { mutate: createOrEditQuestion, isPending } = useMutation({
+    mutationFn: async (data: IQuestion) => (questionBool.data ? await axiosInstance.put(endpoints.surveyQuestion.update(questionBool.data.id), data) : await axiosInstance.post(endpoints.surveyQuestion.add, data)),
+    onSuccess: async () => {
+      // try {
+      // if (TYPE_WITH_ANSWERS.has(question.type)) {
+      //   const existingAnswers = get(questionBool, "data.answers", []);
+      //   // Filter out the answers that are not present in the new answers array
+      //   const deletedAnswersIds = filter(existingAnswers, (existingAnswer) => {
+      //     return !answers.find((newAnswer: any) => newAnswer.id === existingAnswer.id);
+      //   }).map((deletedAnAnswer) => deletedAnAnswer.id);
+      //   const promises = [...answers, ...deletedAnswersIds].map((answerOrId: any) => (isString(answerOrId) ? deleteAnswer(answerOrId) : createEditOrDeleteAnswer({ ...answerOrId, questionId: question.id })));
+      //   await Promise.all(promises);
+      // }
+      // } catch (error) {
+      //   console.log(error);
+      // }
 
-      try {
-        if (TYPE_WITH_ANSWERS.has(question.type)) {
-          const existingAnswers = get(questionBool, "data.answers", []);
-
-          // Filter out the answers that are not present in the new answers array
-          const deletedAnswersIds = filter(existingAnswers, (existingAnswer) => {
-            return !answers.find((newAnswer: any) => newAnswer.id === existingAnswer.id);
-          }).map((deletedAnAnswer) => deletedAnAnswer.id);
-
-          const promises = [...answers, ...deletedAnswersIds].map((answerOrId: any) => (isString(answerOrId) ? deleteAnswer(answerOrId) : createEditOrDeleteAnswer({ ...answerOrId, questionId: question.id })));
-          await Promise.all(promises);
-        }
-
-        loadingBool.onFalse();
-        questionBool.data && questionBool.onFalse();
-        message.success("Muvaffaqqiyatli saqlandi!");
-        queryClient.invalidateQueries({ queryKey: ["survey", survey.id] });
-      } catch (error) {
-        console.log(error);
-      }
-
+      questionBool.data && questionBool.onFalse();
+      message.success("Muvaffaqqiyatli saqlandi!");
+      queryClient.invalidateQueries({ queryKey: ["survey", survey.id] });
       form.resetFields();
       form.setFieldValue("type", QUESTION_TYPES.SHORT_ANSWER);
     },
   });
 
-  const onFinish = ({ text, type, answers, required }: any) => {
-    loadingBool.onTrue();
-    createOrEditQuestion({ data: { text, type, surveyId: survey.id, required }, answers });
-    console.log("Received values:", answers);
+  const onFinish = (values: IQuestion) => {
+    createOrEditQuestion({ ...values, required: false, surveyId: survey.id });
   };
 
   useEffect(() => {
@@ -118,6 +109,9 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
                     <Form.Item hidden {...optionField} name={[optionField.name, "id"]}>
                       <Input />
                     </Form.Item>
+                    <Form.Item hidden {...optionField} name={[optionField.name, "orderIndex"]}>
+                      <Input />
+                    </Form.Item>
                   </Space>
                 ))}
                 <Form.Item className="mb-0">
@@ -129,13 +123,13 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
             )}
           </Form.List>
         )}
-        <Flex justify="space-between" align="center" className="mt-3">
-          <Form.Item name={"required"} className="!m-0" valuePropName="checked" label={"Majburiy"} layout="horizontal">
+        <Flex justify="flex-end" align="center" className="mt-3">
+          {/* <Form.Item name={"required"} className="!m-0" valuePropName="checked" label={"Majburiy"} layout="horizontal">
             <Checkbox />
-          </Form.Item>
+          </Form.Item> */}
           <Space>
             <Button onClick={questionBool.onFalse}>Bekor qilish</Button>
-            <Button type="primary" htmlType="submit">
+            <Button loading={isPending} type="primary" htmlType="submit">
               Saqlash
             </Button>
           </Space>

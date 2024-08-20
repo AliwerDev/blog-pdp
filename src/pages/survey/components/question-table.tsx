@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { HolderOutlined } from "@ant-design/icons";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { DndContext } from "@dnd-kit/core";
@@ -7,7 +7,7 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button, Checkbox, message, Popconfirm, Space, Table, theme } from "antd";
-import type { CheckboxProps, TableColumnsType } from "antd";
+import type { TableColumnsType } from "antd";
 import { get } from "lodash";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { IAnswer, IQuestion, ISurvey } from "models";
@@ -60,13 +60,13 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
   const [dataSource, setDataSource] = React.useState<IQuestion[]>(get(survey, "questions", []));
   const queryClient = useQueryClient();
 
-  const { mutate: editQuestion } = useMutation({
-    mutationFn: async (data: IQuestion) => await axiosInstance.put(endpoints.surveyQuestion.update(data.id), data),
-    onSuccess: async () => {
-      message.success("Muvaffaqqiyatli o'zgartirildi!");
-      queryClient.invalidateQueries({ queryKey: ["survey", survey.id] });
-    },
-  });
+  // const { mutate: editQuestion } = useMutation({
+  //   mutationFn: async (data: IQuestion) => await axiosInstance.put(endpoints.surveyQuestion.update(data.id), data),
+  //   onSuccess: async () => {
+  //     message.success("Muvaffaqqiyatli o'zgartirildi!");
+  //     queryClient.invalidateQueries({ queryKey: ["survey", survey.id] });
+  //   },
+  // });
 
   const { mutate: changeOrderIndexes } = useMutation({
     mutationFn: async (data: string[]) => await axiosInstance.post(endpoints.surveyQuestion.changeOrderIndexes, data),
@@ -96,15 +96,15 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
     }
   };
 
-  const handleRequiredChange = useCallback(
-    (question: IQuestion): CheckboxProps["onChange"] => {
-      return (e) => {
-        question.required = e.target.checked;
-        editQuestion(question);
-      };
-    },
-    [editQuestion]
-  );
+  // const handleRequiredChange = useCallback(
+  //   (question: IQuestion): CheckboxProps["onChange"] => {
+  //     return (e) => {
+  //       question.required = e.target.checked;
+  //       editQuestion(question);
+  //     };
+  //   },
+  //   [editQuestion]
+  // );
 
   useEffect(() => {
     if (get(survey, "questions", [])) {
@@ -134,12 +134,12 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
       { key: "number", align: "center", title: "№", width: 40, render: (_: any, _1: any, index: number) => index + 1 },
       { title: "Matn", dataIndex: "text" },
       { title: "Turi", dataIndex: "type", width: 180, render: (value: string) => get(QUESTION_TYPES_TITLES, value) },
-      {
-        title: "Majburiy",
-        dataIndex: "required",
-        width: 120,
-        render: (value: boolean, row: IQuestion) => <Checkbox disabled={survey.published} checked={value} onChange={handleRequiredChange(row)} />,
-      },
+      // {
+      //   title: "Majburiy",
+      //   dataIndex: "required",
+      //   width: 120,
+      //   render: (value: boolean, row: IQuestion) => <Checkbox disabled={survey.published} checked={value} onChange={handleRequiredChange(row)} />,
+      // },
       ...(!survey.published
         ? [
             {
@@ -159,7 +159,7 @@ const QuestionsTable: React.FC<Props> = ({ survey, questionBool }) => {
           ]
         : []),
     ],
-    [questionBool, deleteQuestion, handleRequiredChange, survey]
+    [questionBool, deleteQuestion, survey]
   );
 
   const { token } = theme.useToken();
