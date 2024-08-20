@@ -53,7 +53,7 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
   });
 
   const onFinish = (values: IQuestion) => {
-    createOrEditQuestion({ ...values, required: false, surveyId: survey.id });
+    createOrEditQuestion({ ...values, surveyId: survey.id });
   };
 
   useEffect(() => {
@@ -123,10 +123,12 @@ const AddEditQuestionForm = ({ defaultValue, questionBool, survey }: { survey: a
             )}
           </Form.List>
         )}
-        <Flex justify="flex-end" align="center" className="mt-3">
-          {/* <Form.Item name={"required"} className="!m-0" valuePropName="checked" label={"Majburiy"} layout="horizontal">
-            <Checkbox />
-          </Form.Item> */}
+        <Flex justify="space-between" align="center" className="mt-3">
+          {type === QUESTION_TYPES.CHECKBOXES && (
+            <Form.Item name={"required"} className="!m-0" valuePropName="checked" label={"Majburiy"} layout="horizontal">
+              <Checkbox />
+            </Form.Item>
+          )}
           <Space>
             <Button onClick={questionBool.onFalse}>Bekor qilish</Button>
             <Button loading={isPending} type="primary" htmlType="submit">
