@@ -5,7 +5,7 @@ import { get } from "lodash";
 import { MdDownload, MdEdit, MdOutlineDeleteOutline, MdPublish } from "react-icons/md";
 import { BsCheckCircle, BsThreeDotsVertical } from "react-icons/bs";
 import dayjs from "dayjs";
-import { App, Button, Dropdown, Flex, Menu, message, Table, Typography } from "antd";
+import { App, Button, Dropdown, Flex, Menu, message, Table, Tooltip, Typography } from "antd";
 import AddEditSurveyDialog from "./components/add-edit-dialog";
 import { ISurvey } from "models";
 import { useEffect } from "react";
@@ -74,9 +74,15 @@ const SurveysPage = () => {
       title: "Name",
       dataIndex: "title",
       key: "title",
-      ellipsis: true,
       width: 200,
-      render: (value: any, row: any) => <Link to={`/survey/${row.id}?token=${hasToken.data}`}>{value}</Link>,
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (value: any, row: any) => (
+        <Tooltip placement="topLeft" title={value}>
+          <Link to={`/survey/${row.id}?token=${hasToken.data}`}>{value}</Link>
+        </Tooltip>
+      ),
     },
     {
       title: "Boshlanish vaqti",
@@ -161,7 +167,7 @@ const SurveysPage = () => {
       <Table loading={isFetching} rowKey={"id"} pagination={false} dataSource={surveys} columns={columns} />
 
       <PublishSurveyDialog refetch={refetch} modalBool={publishBool} />
-      <AddEditSurveyDialog refetch={refetch} modalBool={modalBool} />
+      <AddEditSurveyDialog refetch={refetch} modalBool={modalBool} surveys={surveys} />
     </div>
   );
 };

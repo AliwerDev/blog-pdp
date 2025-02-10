@@ -21,9 +21,9 @@ const SurveyPage = () => {
   const questionBool = useBoolean();
   const publishBool = useBoolean();
   const hasToken = useBoolean();
-  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
+  const [searchParams] = useSearchParams();
 
   const accessToken = searchParams.get("token");
 
@@ -64,15 +64,15 @@ const SurveyPage = () => {
   }, [accessToken]);
 
   return (
-    <div className="pb-10">
+    <div className="pb-10 max-w-full">
       {contextHolder}
-      <Flex className="mb-4" justify="space-between" align="flex-end">
-        <Typography.Title className="flex gap-2" level={4}>
+      <div className="mt-5 mb-7 gap-5 flex items-center">
+        <Typography.Title className="grid flex-1 gap-2 !m-0" level={4} style={{ gridTemplateColumns: "max-content max-content auto" }}>
           <span className="cursor-pointer" style={{ color: token.colorSuccess }} onClick={() => router.push(`/?token=${accessToken}`)}>
             So'rovnomalar
           </span>
           <span>/</span>
-          <span className="inline-block max-w-[250PX] text-ellipsis overflow-hidden text-nowrap">{survey.title ? survey.title : "So'rovnoma"}</span>
+          <span className="inline-block text-ellipsis overflow-hidden text-nowrap">{survey.title ? survey.title : "So'rovnoma"}</span>
         </Typography.Title>
 
         <Flex align="center" gap="10px">
@@ -92,7 +92,7 @@ const SurveyPage = () => {
             </Button>
           ) : null}
         </Flex>
-      </Flex>
+      </div>
 
       <SurveyForm editingBool={editingBool} survey={survey} />
 

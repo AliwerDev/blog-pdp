@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import axiosInstance, { endpoints } from "../../../services/axios";
 import { BooleanReturnType } from "../../../hooks/use-boolean";
-import { get } from "lodash";
+import { get, isString } from "lodash";
 
 const PublishSurveyDialog = ({ modalBool, refetch }: { modalBool: BooleanReturnType; refetch: any }) => {
   const queryClient = useQueryClient();
@@ -17,11 +17,27 @@ const PublishSurveyDialog = ({ modalBool, refetch }: { modalBool: BooleanReturnT
   });
 
   const departments = useMemo(() => {
-    const valueLabelMapper = (list: any[]): any[] => {
-      return list.map((item) => ({ value: item.ID, key: item.ID, label: item.NAME, title: item.NAME, children: item.children ? valueLabelMapper(item.children) : undefined }));
+    const valueLabelMapper = (departments: any[] = [], users: any[] = []): any[] => {
+      departments = departments.map((item) => ({
+        value: item.ID,
+        key: item.ID,
+        label: item.NAME,
+        title: item.NAME,
+        children: valueLabelMapper(item.children, item.users),
+        //
+      }));
+
+      users = users.map((item) => ({
+        value: "userId=" + item.ID,
+        key: item.ID,
+        label: (item.NAME || "") + " " + (item.LAST_NAME || ""),
+        title: (item.NAME || "") + " " + (item.LAST_NAME || ""), //
+      }));
+
+      return departments.concat(users);
     };
 
-    return valueLabelMapper(get(departmentsData, "data.result", []));
+    return valueLabelMapper(get(departmentsData, "data.result", []), []);
   }, [departmentsData]);
 
   const { mutate: publishHandler, isPending } = useMutation({
@@ -40,7 +56,8 @@ const PublishSurveyDialog = ({ modalBool, refetch }: { modalBool: BooleanReturnT
   };
 
   const onFinish = () => {
-    publishHandler({ departmentIdes: ids, surveyId: modalBool.data });
+    const userIdes = ids.filter((id) => isString(id) && id.startsWith("userId=")).map((id) => id.slice(7));
+    publishHandler({ userIdes, surveyId: modalBool.data });
   };
 
   return (
@@ -63,7 +80,23 @@ const PublishSurveyDialog = ({ modalBool, refetch }: { modalBool: BooleanReturnT
     >
       <Alert className="mb-4" showIcon type="warning" message="Unutmang so‘rovnoma chop etilgandan keyin uni tahrirlay olmaysiz!" />
 
-      <TreeSelect loading={isFetching} maxTagTextLength={12} allowClear showSearch={false} treeCheckable={true} size="large" maxTagCount={8} listHeight={400} treeDefaultExpandedKeys={[1]} treeData={departments} value={ids} onChange={setIds} placeholder={"So'rovnoma yuborish uchun departmentlarni tanlang!"} style={{ width: "100%" }} />
+      <TreeSelect
+        showCheckedStrategy={TreeSelect.SHOW_ALL}
+        loading={isFetching}
+        maxTagTextLength={12}
+        allowClear
+        treeCheckable={true}
+        size="large"
+        maxTagCount={8}
+        listHeight={400}
+        treeDefaultExpandedKeys={[1]}
+        treeData={departments}
+        value={ids}
+        onChange={setIds}
+        placeholder={"So'rovnoma yuborish uchun departmentlarni tanlang!"}
+        style={{ width: "100%" }}
+        //
+      />
     </Modal>
   );
 };

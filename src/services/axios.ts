@@ -53,6 +53,7 @@ export const endpoints = {
   survey: {
     list: "/staff/v1/survey/get-all",
     add: "/staff/v1/survey/add",
+    clone: "/staff/v1/survey/clone",
     publish: "/staff/v1/bitrix-chat-bot/send-notification",
     exel: (id: string) => `/staff/v1/survey/download-excel/${id}`,
     one: (id: string) => `/staff/v1/survey/get-one/${id}?withQuestions=true`,
