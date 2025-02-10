@@ -42,9 +42,9 @@ const PublishSurveyDialog = ({ modalBool, refetch }: { modalBool: BooleanReturnT
 
   const { mutate: publishHandler, isPending } = useMutation({
     mutationFn: async (data: any) => await axiosInstance.post(endpoints.survey.publish, data),
-    onSuccess: () => {
+    onSuccess: (res: any) => {
       queryClient.invalidateQueries({ queryKey: ["survey", modalBool.data] });
-      message.success("Muvaffaqqiyatli chop etildi!");
+      message.success(get(res, "message") || "Muvaffaqqiyatli chop etildi!");
       cancel();
     },
   });
@@ -95,6 +95,7 @@ const PublishSurveyDialog = ({ modalBool, refetch }: { modalBool: BooleanReturnT
         onChange={setIds}
         placeholder={"So'rovnoma yuborish uchun departmentlarni tanlang!"}
         style={{ width: "100%" }}
+        filterTreeNode={(input, node) => (node.title as string).toLowerCase().includes(input.toLowerCase())}
         //
       />
     </Modal>
