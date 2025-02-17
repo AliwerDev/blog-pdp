@@ -1,6 +1,7 @@
 import MainLayout from "layouts/main";
-import SurveyPage from "pages/survey";
-import SurveysPage from "pages/surveys";
+import BlogOnePage from "pages/blog-one";
+import BlogsBlockPage from "pages/blogs-block";
+import HomePage from "pages/home";
 import { Navigate, useRoutes } from "react-router-dom";
 
 // ----------------------------------------------------------------------
@@ -11,8 +12,9 @@ export default function Router() {
       path: "/",
       element: <MainLayout />,
       children: [
-        { index: true, element: <SurveysPage /> },
-        { path: "survey/:id", element: <SurveyPage /> },
+        { index: true, element: <HomePage /> },
+        { path: "/blog/:id", element: <BlogOnePage /> },
+        { path: "/blogs-block", element: <BlogsBlockPage /> },
       ],
     },
     { path: "*", element: <Navigate to="/" replace /> },

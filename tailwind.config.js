@@ -11,6 +11,9 @@ module.exports = {
       "2xl": "1600px",
     },
     extend: {
+      fontFamily: {
+        sharp: ["Sharp Grotesk", "sans-serif"],
+      },
       borderColor: {
         customGrey: "#131212",
         customGreen: "#7d8d7b",
