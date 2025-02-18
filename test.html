@@ -1,0 +1,19 @@
+<iframe id="externalContent" style="width: 1px; min-width: 100%; min-height: 400px" src="https://blog-pdp.vercel.app"></iframe>
+
+<script>
+  const iframe = document.getElementById("externalContent");
+  iframe &&
+    window.addEventListener("message", ({ origin, data }) => {
+      if (data === "scrollToTop") iframe.scrollIntoView();
+      else if (data?.action === "redirect") window.open(data.url, "_blank");
+      else iframe.style.height = data + "px";
+    });
+</script>
+
+<style>
+  #externalContent {
+    background: #f8f8f8;
+    border: none;
+    outline: none;
+  }
+</style>
