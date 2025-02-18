@@ -26,37 +26,39 @@ const BlogOnePage = () => {
 
   return (
     <Styled>
-      <div className="tags">
-        {get(blog, "tags", []).map((tag) => (
-          <span key={tag} className="tag">
-            {tag}
-          </span>
-        ))}
-      </div>
-      <Row gutter={32}>
-        <Col xs={24} lg={18}>
-          <div className="content">
-            <Typography.Title className="title">{blog?.title}</Typography.Title>
+      <div className="container">
+        <div className="tags">
+          {get(blog, "tags", []).map((tag) => (
+            <span key={tag} className="tag">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <Row gutter={32}>
+          <Col xs={24} lg={18}>
+            <div className="content">
+              <Typography.Title className="title">{blog?.title}</Typography.Title>
 
-            <div className="info_block">
-              <div className="author-info">
-                <Avatar src={get(blog, "author.avatarUrl")} icon={<UserOutlined />} />
-                <span>{get(blog, "author.fullname")}</span>
+              <div className="info_block">
+                <div className="author-info">
+                  <Avatar src={get(blog, "author.avatarUrl")} icon={<UserOutlined />} />
+                  <span>{get(blog, "author.fullname")}</span>
+                </div>
+                |
+                <span>
+                  <CalendarOutlined /> {dayjs(blog?.date).format("DD.MM.YYYY")}
+                </span>
               </div>
-              |
-              <span>
-                <CalendarOutlined /> {dayjs(blog?.date).format("DD.MM.YYYY")}
-              </span>
-            </div>
 
-            <LazyLoadImage className="image" src={blog?.coverImageUrl} alt="Blog Image" effect="blur" />
-            <Typography className="text_content">{blog?.content}</Typography>
-          </div>
-        </Col>
-        <Col xs={24} lg={6}>
-          <Importants />
-        </Col>
-      </Row>
+              <LazyLoadImage className="image" src={blog?.coverImageUrl} alt="Blog Image" effect="blur" />
+              <Typography className="text_content">{blog?.content}</Typography>
+            </div>
+          </Col>
+          <Col xs={24} lg={6}>
+            <Importants />
+          </Col>
+        </Row>
+      </div>
     </Styled>
   );
 };
