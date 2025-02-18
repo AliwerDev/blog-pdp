@@ -9,6 +9,7 @@ import { parseNotionResponse } from "utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "services/axios";
 import { get, isEmpty, lowerCase } from "lodash";
+import SkeletonCard from "./components/SkeletonCard";
 
 const companies = [
   {
@@ -52,7 +53,7 @@ const HomePage = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Hamma");
   const [activeTags, setSelectedTags] = useState<string[]>([]);
-  const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
+  const { data: blogsData, isLoading } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
 
   const blogs = useMemo(() => {
     let data = parseNotionResponse(get(blogsData, "data", []));
@@ -93,6 +94,13 @@ const HomePage = () => {
           <Col xs={24} lg={18}>
             <motion.div initial="hidden" animate="visible" variants={listVariants}>
               <Row gutter={[32, 32]} justify="start">
+                {isLoading &&
+                  new Array(4).fill("").map((_, i) => (
+                    <Col xs={24} sm={12} lg={8} key={i}>
+                      <SkeletonCard />
+                    </Col>
+                  ))}
+
                 {blogs.map((blog, index) => (
                   <Col xs={24} sm={12} lg={8} key={index}>
                     <BlogCard {...blog} />
