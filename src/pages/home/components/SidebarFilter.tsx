@@ -20,7 +20,15 @@ const Styled = styled.div`
 
 const { Title, Text } = Typography;
 
-const SidebarFilter = () => {
+const SidebarFilter = ({ tags, activeTags, setTegs }: { tags: string[]; activeTags: string[]; setTegs: (val: string[]) => void }) => {
+  const onChangeFilter = (event: any) => {
+    if (event?.target?.checked) {
+      setTegs([...activeTags, event?.target?.value]);
+    } else {
+      setTegs(activeTags.filter((t) => t !== event?.target?.value));
+    }
+  };
+
   return (
     <Styled>
       <Title level={3}>Filter</Title>
@@ -30,23 +38,25 @@ const SidebarFilter = () => {
           LOYIHALAR
         </Text>
         <Space direction="vertical" className="checkboxes">
-          <Checkbox>PDP EcoSystem</Checkbox>
-          <Checkbox>PDP University</Checkbox>
-          <Checkbox>PDP School</Checkbox>
-          <Checkbox>PDP Junior</Checkbox>
-          <Checkbox>PDP Online</Checkbox>
-          <Checkbox>PDP Unicorn</Checkbox>
+          {tags.map((tag) =>
+            tag.toLowerCase().startsWith("pdp") ? (
+              <Checkbox checked={activeTags.includes(tag)} onChange={onChangeFilter} value={tag} key={tag}>
+                {tag}
+              </Checkbox>
+            ) : null
+          )}
         </Space>
         <Text type="secondary" className="sub_title">
           KATEGORIYALAR
         </Text>
         <Space direction="vertical" className="checkboxes">
-          <Checkbox>Sun’iy intellekt</Checkbox>
-          <Checkbox>Texnologiyalar</Checkbox>
-          <Checkbox>Dasturlash</Checkbox>
-          <Checkbox>Frontend</Checkbox>
-          <Checkbox>Biznes</Checkbox>
-          <Checkbox>Management</Checkbox>
+          {tags.map((tag) =>
+            !tag.toLowerCase().startsWith("pdp") ? (
+              <Checkbox value={tag} key={tag}>
+                {tag}
+              </Checkbox>
+            ) : null
+          )}
         </Space>
       </div>
     </Styled>

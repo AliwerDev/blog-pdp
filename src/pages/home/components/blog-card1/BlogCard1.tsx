@@ -1,10 +1,12 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Avatar, Flex } from "antd";
+import { Avatar, Flex, Typography } from "antd";
 import { UserOutlined, CalendarOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
+import { BlogPost } from "../blog-card/BlogCard";
+import dayjs from "dayjs";
 
 const BlogCardWrapper = styled(motion.div)`
   width: 100%;
@@ -64,38 +66,39 @@ const BlogCardWrapper = styled(motion.div)`
   }
 `;
 
-interface BlogCardProps {
-  image: string;
-  title: string;
-  author: string;
-  date: string;
-}
-
 const cardVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
 };
 
-const BlogCard: React.FC<BlogCardProps> = ({ image, title, author, date }) => {
+const BlogCard: React.FC<BlogPost> = ({ coverImageUrl, content, tags, title, author, date }) => {
   return (
     <Link to="/blog/123123">
       <BlogCardWrapper variants={cardVariants}>
         <div className="content">
           <Flex align="center" justify="space-between" className="card_header">
             <div className="tags">
-              <span className="tag">Texnologiya</span>
+              {tags.map((tag) => (
+                <span key={tag} className="tag">
+                  {tag}
+                </span>
+              ))}
             </div>
             <span className="date">
-              <CalendarOutlined /> 24.12.2024
+              <CalendarOutlined /> {dayjs(date).format("DD.MM.YYYY")}
             </span>
           </Flex>
-          <LazyLoadImage className="image" src={"https://pdp.uz/static/media/2021.59ccb7e4fe11a67fa8e6.jpg"} alt="Blog Image" effect="blur" />
+          <LazyLoadImage className="image" src={coverImageUrl} alt="Blog Image" effect="blur" />
           <div className="author-info">
-            <Avatar size="small" icon={<UserOutlined />} />
-            <span>Odilbek Mirzayev</span>
+            <Avatar src={author.avatarUrl} size="small" icon={<UserOutlined />} />
+            <span>{author.fullname}</span>
           </div>
-          <p className="title">PDP Connect loyihasi start berildi, bu texnologik soha</p>
-          <p className="description">Integer consequat scelerisque eros, in ultricies sem elementum tempor. Praesent pharetra...</p>
+          <Typography.Paragraph ellipsis={{ rows: 2 }} className="title">
+            {title}
+          </Typography.Paragraph>
+          <Typography.Paragraph ellipsis={{ rows: 4 }} className="description">
+            {content}
+          </Typography.Paragraph>
         </div>
       </BlogCardWrapper>
     </Link>

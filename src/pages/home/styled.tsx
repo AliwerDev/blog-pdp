@@ -13,6 +13,8 @@ const HomeStyled = styled.div`
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    width: fit-content;
+    margin: 0 auto;
     margin-bottom: 30px;
   }
 

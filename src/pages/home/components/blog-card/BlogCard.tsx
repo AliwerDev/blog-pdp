@@ -1,10 +1,12 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Avatar } from "antd";
+import { Avatar, Typography } from "antd";
 import { UserOutlined, CalendarOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
+import { get } from "lodash";
+import dayjs from "dayjs";
 
 const BlogCardWrapper = styled(motion.div)`
   width: 100%;
@@ -14,7 +16,7 @@ const BlogCardWrapper = styled(motion.div)`
 
   .image {
     width: 100%;
-    /* height: 180px; */
+    min-height: 180px;
     object-fit: cover;
     border-radius: 7px;
   }
@@ -63,37 +65,45 @@ const BlogCardWrapper = styled(motion.div)`
   }
 `;
 
-interface BlogCardProps {
-  image: string;
+export type BlogPost = {
+  author: {
+    fullname: string;
+    avatarUrl: string;
+  };
   title: string;
-  author: string;
+  content: string;
+  coverImageUrl: string;
+  tags: string[];
   date: string;
-}
+};
 
 const cardVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
 };
 
-const BlogCard: React.FC<BlogCardProps> = ({ image, title, author, date }) => {
+const BlogCard: React.FC<BlogPost> = ({ content, author, coverImageUrl, date, tags, title }) => {
   return (
     <Link to="/blog/123123">
       <BlogCardWrapper variants={cardVariants}>
-        <LazyLoadImage className="image" src={"https://pdp.uz/static/media/2021.59ccb7e4fe11a67fa8e6.jpg"} alt="Blog Image" effect="blur" />
+        <LazyLoadImage className="image" src={coverImageUrl} alt="Blog Image" effect="blur" />
         <div className="content">
           <div className="tags">
-            <span className="tag">PDP EcoSystem</span>
-            <span className="tag">Texnologiya</span>
+            <span className="tag">{get(tags, "[0]")}</span>
           </div>
-          <p className="title">PDP Connect loyihasi start berildi, bu texnologik soha</p>
-          <p className="description">Integer consequat scelerisque eros, in ultricies sem elementum tempor. Praesent pharetra...</p>
+          <Typography.Paragraph ellipsis={{ rows: 2 }} className="title">
+            {title}
+          </Typography.Paragraph>
+          <Typography.Paragraph ellipsis={{ rows: 4 }} className="description">
+            {content}
+          </Typography.Paragraph>
           <div className="footer">
             <div className="author-info">
-              <Avatar size="small" icon={<UserOutlined />} />
-              <span>Odilbek Mirzayev</span>
+              <Avatar src={get(author, "avatarUrl")} size="small" icon={<UserOutlined />} />
+              <span>{get(author, "fullname")}</span>
             </div>
             <span>
-              <CalendarOutlined /> 24.12.2024
+              <CalendarOutlined /> {dayjs(date).format("DD.MM.YYYY")}
             </span>
           </div>
         </div>
