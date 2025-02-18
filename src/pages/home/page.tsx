@@ -92,7 +92,7 @@ const HomePage = () => {
         <Row gutter={[32, 32]} justify="start">
           <Col xs={24} lg={18}>
             <motion.div initial="hidden" animate="visible" variants={listVariants}>
-              <Row gutter={[32, 32]} justify="center">
+              <Row gutter={[32, 32]} justify="start">
                 {blogs.map((blog, index) => (
                   <Col xs={24} sm={12} lg={8} key={index}>
                     <BlogCard {...blog} />
