@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 const Styled = styled.div`
   width: 100%;
   height: 100%;
-  background-color: #f8f8f8;
 
   .container {
     max-width: 1180px;

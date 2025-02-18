@@ -5,7 +5,7 @@
   iframe &&
     window.addEventListener("message", ({ origin, data }) => {
       if (data === "scrollToTop") iframe.scrollIntoView();
-      else if (data?.action === "redirect") window.open(data.url, "_blank");
+      else if (data?.action === "blog-one") iframe.src = "https://blog-pdp.vercel.app/blog/" + data.blogId;
       else iframe.style.height = data + "px";
     });
 </script>

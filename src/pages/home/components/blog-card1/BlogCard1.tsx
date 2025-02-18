@@ -4,7 +4,6 @@ import { Avatar, Flex, Typography } from "antd";
 import { UserOutlined, CalendarOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Link } from "react-router-dom";
 import { BlogPost } from "../blog-card/BlogCard";
 import dayjs from "dayjs";
 
@@ -71,37 +70,38 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
 };
 
-const BlogCard: React.FC<BlogPost> = ({ coverImageUrl, content, tags, title, author, date }) => {
+const BlogCard: React.FC<BlogPost> = ({ id, coverImageUrl, content, tags, title, author, date }) => {
+  const openBlogOne = () => {
+    window.parent.postMessage({ action: "blog-one", blogId: id }, "*");
+  };
   return (
-    <Link to="/blog/123123">
-      <BlogCardWrapper variants={cardVariants}>
-        <div className="content">
-          <Flex align="center" justify="space-between" className="card_header">
-            <div className="tags">
-              {tags.map((tag) => (
-                <span key={tag} className="tag">
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <span className="date">
-              <CalendarOutlined /> {dayjs(date).format("DD.MM.YYYY")}
-            </span>
-          </Flex>
-          <LazyLoadImage className="image" src={coverImageUrl} alt="Blog Image" effect="blur" />
-          <div className="author-info">
-            <Avatar src={author.avatarUrl} size="small" icon={<UserOutlined />} />
-            <span>{author.fullname}</span>
+    <BlogCardWrapper onClick={openBlogOne} variants={cardVariants}>
+      <div className="content">
+        <Flex align="center" justify="space-between" className="card_header">
+          <div className="tags">
+            {tags.map((tag) => (
+              <span key={tag} className="tag">
+                {tag}
+              </span>
+            ))}
           </div>
-          <Typography.Paragraph ellipsis={{ rows: 2 }} className="title">
-            {title}
-          </Typography.Paragraph>
-          <Typography.Paragraph ellipsis={{ rows: 4 }} className="description">
-            {content}
-          </Typography.Paragraph>
+          <span className="date">
+            <CalendarOutlined /> {dayjs(date).format("DD.MM.YYYY")}
+          </span>
+        </Flex>
+        <LazyLoadImage className="image" src={coverImageUrl} alt="Blog Image" effect="blur" />
+        <div className="author-info">
+          <Avatar src={author.avatarUrl} size="small" icon={<UserOutlined />} />
+          <span>{author.fullname}</span>
         </div>
-      </BlogCardWrapper>
-    </Link>
+        <Typography.Paragraph ellipsis={{ rows: 2 }} className="title">
+          {title}
+        </Typography.Paragraph>
+        <Typography.Paragraph ellipsis={{ rows: 4 }} className="description">
+          {content}
+        </Typography.Paragraph>
+      </div>
+    </BlogCardWrapper>
   );
 };
 

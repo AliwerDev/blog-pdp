@@ -5,6 +5,7 @@ export function parseNotionResponse(response: any): BlogPost[] {
   return get(response, "results", []).map((page: any) => {
     const author = page.properties.Author.people[0] || {};
     return {
+      id: page.id,
       author: {
         fullname: author.name || "Unknown",
         avatarUrl: author.avatar_url || "",

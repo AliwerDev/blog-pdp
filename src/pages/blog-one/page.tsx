@@ -4,32 +4,53 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { UserOutlined, CalendarOutlined } from "@ant-design/icons";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import Importants from "./components/Importants";
+import { useParams } from "react-router-dom";
+import { BlogPost } from "pages/home/components/blog-card/BlogCard";
+import { parseNotionResponse } from "utils/helpers";
+import { get } from "lodash";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import axiosInstance from "services/axios";
 
 const BlogOnePage = () => {
+  const params = useParams();
+  const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
+
+  const blog = useMemo(() => {
+    let data: BlogPost[] = parseNotionResponse(get(blogsData, "data", []));
+    return data.find((blog) => blog.id === params.id);
+  }, [blogsData, params]);
+
+  if (!blog) return null;
+
   return (
     <Styled>
       <div className="tags">
-        <span className="tag">PDP EcoSystem</span>
-        <span className="tag">Texnologiya</span>
+        {get(blog, "tags", []).map((tag) => (
+          <span key={tag} className="tag">
+            {tag}
+          </span>
+        ))}
       </div>
       <Row gutter={32}>
         <Col xs={24} lg={18}>
           <div className="content">
-            <Typography.Title className="title">Tajribali va fidoyi mutaxassislardan iborat jamoamiz har doim o‘sish va rivojlanishga intiladi</Typography.Title>
+            <Typography.Title className="title">{blog?.title}</Typography.Title>
 
             <div className="info_block">
               <div className="author-info">
-                <Avatar icon={<UserOutlined />} />
-                <span>Odilbek Mirzayev</span>
+                <Avatar src={get(blog, "author.avatarUrl")} icon={<UserOutlined />} />
+                <span>{get(blog, "author.fullname")}</span>
               </div>
               |
               <span>
-                <CalendarOutlined /> 24.12.2024
+                <CalendarOutlined /> {dayjs(blog?.date).format("DD.MM.YYYY")}
               </span>
             </div>
 
-            <LazyLoadImage className="image" src={"https://pdp.uz/static/media/2021.59ccb7e4fe11a67fa8e6.jpg"} alt="Blog Image" effect="blur" />
-            <Typography className="text_content">Artificial Intelligence: Revolutionizing Healthcare. Artificial intelligence has made incredible strides in healthcare, offering new ways to diagnose diseases, predict patient outcomes, and tailor treatments to individual needs. Thanks to AI-powered algorithms, diseases can now be detected at earlier stages, allowing healthcare to become more efficient, cost-effective, and patient-centric.</Typography>
+            <LazyLoadImage className="image" src={blog?.coverImageUrl} alt="Blog Image" effect="blur" />
+            <Typography className="text_content">{blog?.content}</Typography>
           </div>
         </Col>
         <Col xs={24} lg={6}>

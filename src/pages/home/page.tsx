@@ -80,33 +80,35 @@ const HomePage = () => {
 
   return (
     <HomeStyled>
-      <Typography className="page_title">Blog</Typography>
-      <div className="tabs">
-        {companies.map((item) => (
-          <div onClick={() => setActiveTab(item.name)} className={`tab ${activeTab === item.name ? "active" : ""}`} key={item.name}>
-            {item.name}
-          </div>
-        ))}
-      </div>
-      <Row gutter={[32, 32]} justify="start">
-        <Col xs={24} lg={18}>
-          <motion.div initial="hidden" animate="visible" variants={listVariants}>
-            <Row gutter={[32, 32]} justify="center">
-              {blogs.map((blog, index) => (
-                <Col xs={24} sm={12} lg={8} key={index}>
-                  <BlogCard {...blog} />
-                </Col>
-              ))}
-              {/* <Col xs={24}>
+      <div className="container">
+        <Typography className="page_title">Blog</Typography>
+        <div className="tabs">
+          {companies.map((item) => (
+            <div onClick={() => setActiveTab(item.name)} className={`tab ${activeTab === item.name ? "active" : ""}`} key={item.name}>
+              {item.name}
+            </div>
+          ))}
+        </div>
+        <Row gutter={[32, 32]} justify="start">
+          <Col xs={24} lg={18}>
+            <motion.div initial="hidden" animate="visible" variants={listVariants}>
+              <Row gutter={[32, 32]} justify="center">
+                {blogs.map((blog, index) => (
+                  <Col xs={24} sm={12} lg={8} key={index}>
+                    <BlogCard {...blog} />
+                  </Col>
+                ))}
+                {/* <Col xs={24}>
                 <div className="load_more">Yana ochish</div>
               </Col> */}
-            </Row>
-          </motion.div>
-        </Col>
-        <Col xs={12} lg={6}>
-          <SidebarFilter activeTags={activeTags} tags={tags} setTegs={setSelectedTags} />
-        </Col>
-      </Row>
+              </Row>
+            </motion.div>
+          </Col>
+          <Col xs={12} lg={6}>
+            <SidebarFilter activeTags={activeTags} tags={tags} setTegs={setSelectedTags} />
+          </Col>
+        </Row>
+      </div>
     </HomeStyled>
   );
 };

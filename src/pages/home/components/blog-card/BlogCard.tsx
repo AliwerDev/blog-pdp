@@ -4,7 +4,6 @@ import { Avatar, Typography } from "antd";
 import { UserOutlined, CalendarOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Link } from "react-router-dom";
 import { get } from "lodash";
 import dayjs from "dayjs";
 
@@ -75,6 +74,7 @@ export type BlogPost = {
   coverImageUrl: string;
   tags: string[];
   date: string;
+  id: string;
 };
 
 const cardVariants = {
@@ -82,33 +82,35 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
 };
 
-const BlogCard: React.FC<BlogPost> = ({ content, author, coverImageUrl, date, tags, title }) => {
+const BlogCard: React.FC<BlogPost> = ({ id, content, author, coverImageUrl, date, tags, title }) => {
+  const openBlogOne = () => {
+    window.parent.postMessage({ action: "blog-one", blogId: id }, "*");
+  };
+
   return (
-    <Link to="/blog/123123">
-      <BlogCardWrapper variants={cardVariants}>
-        <LazyLoadImage className="image" src={coverImageUrl} alt="Blog Image" effect="blur" />
-        <div className="content">
-          <div className="tags">
-            <span className="tag">{get(tags, "[0]")}</span>
-          </div>
-          <Typography.Paragraph ellipsis={{ rows: 2 }} className="title">
-            {title}
-          </Typography.Paragraph>
-          <Typography.Paragraph ellipsis={{ rows: 4 }} className="description">
-            {content}
-          </Typography.Paragraph>
-          <div className="footer">
-            <div className="author-info">
-              <Avatar src={get(author, "avatarUrl")} size="small" icon={<UserOutlined />} />
-              <span>{get(author, "fullname")}</span>
-            </div>
-            <span>
-              <CalendarOutlined /> {dayjs(date).format("DD.MM.YYYY")}
-            </span>
-          </div>
+    <BlogCardWrapper onClick={openBlogOne} variants={cardVariants}>
+      <LazyLoadImage className="image" src={coverImageUrl} alt="Blog Image" effect="blur" />
+      <div className="content">
+        <div className="tags">
+          <span className="tag">{get(tags, "[0]")}</span>
         </div>
-      </BlogCardWrapper>
-    </Link>
+        <Typography.Paragraph ellipsis={{ rows: 2 }} className="title">
+          {title}
+        </Typography.Paragraph>
+        <Typography.Paragraph ellipsis={{ rows: 4 }} className="description">
+          {content}
+        </Typography.Paragraph>
+        <div className="footer">
+          <div className="author-info">
+            <Avatar src={get(author, "avatarUrl")} size="small" icon={<UserOutlined />} />
+            <span>{get(author, "fullname")}</span>
+          </div>
+          <span>
+            <CalendarOutlined /> {dayjs(date).format("DD.MM.YYYY")}
+          </span>
+        </div>
+      </div>
+    </BlogCardWrapper>
   );
 };
 

@@ -1,13 +1,17 @@
 import styled from "@emotion/styled";
 
 const HomeStyled = styled.div`
-  padding-top: 30px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding-inline: 30px;
+
+  .container {
+    padding-top: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
 
   .page_title {
     font-size: 36px;
-    font-weight: bold;
+    font-weight: 500;
     text-align: center;
     background: linear-gradient(to right, #b807d3 0%, #ffae00 100%);
     background-clip: text;
@@ -15,7 +19,7 @@ const HomeStyled = styled.div`
     -webkit-text-fill-color: transparent;
     width: fit-content;
     margin: 0 auto;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
   }
 
   .tabs {
@@ -24,6 +28,7 @@ const HomeStyled = styled.div`
     gap: 15px;
     margin: 0 auto;
     margin-bottom: 30px;
+    flex-wrap: wrap;
 
     .tab {
       padding: 2px 18px;
@@ -33,6 +38,7 @@ const HomeStyled = styled.div`
       font-size: 16px;
       color: #7c7c7c;
       background-color: #f3f3f3;
+      min-width: fit-content;
 
       &.active {
         color: white;
