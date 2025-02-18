@@ -91,9 +91,11 @@ const BlogCard: React.FC<BlogPost> = ({ id, content, author, coverImageUrl, date
     <BlogCardWrapper onClick={openBlogOne} variants={cardVariants}>
       <LazyLoadImage className="image" src={coverImageUrl} alt="Blog Image" effect="blur" />
       <div className="content">
-        <div className="tags">
-          <span className="tag">{get(tags, "[0]")}</span>
-        </div>
+        {tags.slice(0, 3).map((tag) => (
+          <span key={tag} className="tag">
+            {tag}
+          </span>
+        ))}
         <Typography.Paragraph ellipsis={{ rows: 2 }} className="title">
           {title}
         </Typography.Paragraph>

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { BlogPost } from "../blog-card/BlogCard";
 import dayjs from "dayjs";
+import { get } from "lodash";
 
 const BlogCardWrapper = styled(motion.div)`
   width: 100%;
@@ -79,11 +80,9 @@ const BlogCard: React.FC<BlogPost> = ({ id, coverImageUrl, content, tags, title,
       <div className="content">
         <Flex align="center" justify="space-between" className="card_header">
           <div className="tags">
-            {tags.map((tag) => (
-              <span key={tag} className="tag">
-                {tag}
-              </span>
-            ))}
+            <div className="tags">
+              <span className="tag">{get(tags, "[0]")}</span>
+            </div>
           </div>
           <span className="date">
             <CalendarOutlined /> {dayjs(date).format("DD.MM.YYYY")}
