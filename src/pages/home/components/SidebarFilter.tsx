@@ -52,7 +52,7 @@ const SidebarFilter = ({ tags, activeTags, setTegs }: { tags: string[]; activeTa
         <Space direction="vertical" className="checkboxes">
           {tags.map((tag) =>
             !tag.toLowerCase().startsWith("pdp") ? (
-              <Checkbox value={tag} key={tag}>
+              <Checkbox checked={activeTags.includes(tag)} onChange={onChangeFilter} value={tag} key={tag}>
                 {tag}
               </Checkbox>
             ) : null
