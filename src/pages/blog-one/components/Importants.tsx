@@ -1,6 +1,12 @@
 import styled from "@emotion/styled";
+import { useQuery } from "@tanstack/react-query";
 import { Typography } from "antd";
+import { get } from "lodash";
+import { BlogPost } from "pages/home/components/blog-card/BlogCard";
+import { useMemo } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import axiosInstance from "services/axios";
+import { parseNotionResponse } from "utils/helpers";
 
 const Styled = styled.div`
   padding: 20px;
@@ -21,6 +27,8 @@ const Styled = styled.div`
     display: flex;
     gap: 6px;
     margin-bottom: 15px;
+    align-items: center;
+    cursor: pointer;
 
     .image {
       width: 50px;
@@ -40,26 +48,29 @@ const Styled = styled.div`
 const { Text } = Typography;
 
 const Importants = () => {
+  const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
+
+  const blogs = useMemo(() => {
+    let data: BlogPost[] = parseNotionResponse(get(blogsData, "data", []));
+    return data.slice(0, 4);
+  }, [blogsData]);
+
+  const openBlogOne = (blogId: string) => {
+    window.parent.postMessage({ action: "blog-one", blogId }, "*");
+  };
+
   return (
     <Styled>
       <Text className="sub_title">Muhim e’lonlar</Text>
 
-      <div className="blog_item">
-        <LazyLoadImage className="image" src={"https://pdp.uz/static/media/2021.59ccb7e4fe11a67fa8e6.jpg"} alt="Blog Image" effect="blur" />
-        <Typography className="text">Artificial Intelligence: Revolutionizing Healthcare very fuflozetion</Typography>
-      </div>
-      <div className="blog_item">
-        <LazyLoadImage className="image" src={"https://pdp.uz/static/media/2021.59ccb7e4fe11a67fa8e6.jpg"} alt="Blog Image" effect="blur" />
-        <Typography className="text">Artificial Intelligence: Revolutionizing Healthcare very fuflozetion</Typography>
-      </div>
-      <div className="blog_item">
-        <LazyLoadImage className="image" src={"https://pdp.uz/static/media/2021.59ccb7e4fe11a67fa8e6.jpg"} alt="Blog Image" effect="blur" />
-        <Typography className="text">Artificial Intelligence: Revolutionizing Healthcare very fuflozetion</Typography>
-      </div>
-      <div className="blog_item">
-        <LazyLoadImage className="image" src={"https://pdp.uz/static/media/2021.59ccb7e4fe11a67fa8e6.jpg"} alt="Blog Image" effect="blur" />
-        <Typography className="text">Artificial Intelligence: Revolutionizing Healthcare very fuflozetion</Typography>
-      </div>
+      {blogs.map((blog) => (
+        <div onClick={() => openBlogOne(blog.id)} key={blog.id} className="blog_item">
+          <LazyLoadImage className="image" src={blog.coverImageUrl} alt="Blog Image" effect="blur" />
+          <Typography.Paragraph ellipsis={{ rows: 3 }} className="text">
+            {blog.title}
+          </Typography.Paragraph>
+        </div>
+      ))}
     </Styled>
   );
 };
