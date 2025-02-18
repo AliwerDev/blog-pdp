@@ -6,7 +6,7 @@ const Styled = styled.div`
   background-color: #f8f8f8;
 
   .container {
-    max-width: 1200px;
+    max-width: 1180px;
     margin-inline: auto;
   }
 

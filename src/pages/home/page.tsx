@@ -8,7 +8,7 @@ import SidebarFilter from "./components/SidebarFilter";
 import { parseNotionResponse } from "utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "services/axios";
-import { get, isEmpty } from "lodash";
+import { get, isEmpty, lowerCase } from "lodash";
 
 const companies = [
   {
@@ -49,32 +49,34 @@ const listVariants = {
 };
 
 const HomePage = () => {
+  const [tags, setTags] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Hamma");
   const [activeTags, setSelectedTags] = useState<string[]>([]);
   const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
 
   const blogs = useMemo(() => {
     let data = parseNotionResponse(get(blogsData, "data", []));
-    if (activeTab !== "Hamma") data = data.filter((blog) => blog?.tags?.includes(activeTab));
+
+    const getTags = () => {
+      const set = new Set<string>();
+      data?.forEach((blog) => {
+        blog.tags.forEach((tag) => set.add(tag));
+      });
+
+      return Array.from(set);
+    };
+    setTags(getTags());
+    if (activeTab !== "Hamma") data = data.filter((blog) => blog?.tags?.find((t) => lowerCase(t) === lowerCase(activeTab)));
 
     if (!isEmpty(activeTags))
       data = data?.filter((blog) => {
         for (const tag of blog.tags) {
-          if (activeTags?.includes(tag)) return true;
+          if (activeTags.find((t) => lowerCase(t) === lowerCase(tag))) return true;
         }
         return false;
       });
     return data;
   }, [blogsData, activeTags, activeTab]);
-
-  const tags = useMemo(() => {
-    const set = new Set<string>();
-    blogs?.forEach((blog) => {
-      blog.tags.forEach((tag) => set.add(tag));
-    });
-
-    return Array.from(set);
-  }, [blogs]);
 
   return (
     <HomeStyled>
