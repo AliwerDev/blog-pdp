@@ -1,5 +1,5 @@
 import Styled from "./styled";
-import { Avatar, Col, Row, Typography } from "antd";
+import { Avatar, Col, Row, Skeleton, Typography } from "antd";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { UserOutlined, CalendarOutlined } from "@ant-design/icons";
 import "react-lazy-load-image-component/src/effects/blur.css";
@@ -15,18 +15,17 @@ import axiosInstance from "services/axios";
 
 const BlogOnePage = () => {
   const params = useParams();
-  const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
+  const { data: blogsData, isLoading } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
 
   const blog = useMemo(() => {
     let data: BlogPost[] = parseNotionResponse(get(blogsData, "data", []));
     return data.find((blog) => blog.id === params.id);
   }, [blogsData, params]);
 
-  if (!blog) return null;
-
   return (
     <Styled>
       <div className="container">
+        {isLoading ? <Skeleton.Input /> : null}
         <div className="tags">
           {get(blog, "tags", []).map((tag) => (
             <span key={tag} className="tag">
@@ -37,6 +36,7 @@ const BlogOnePage = () => {
         <Row gutter={32}>
           <Col xs={24} lg={18}>
             <div className="content">
+              {isLoading ? <Skeleton active /> : null}
               <Typography.Title className="title">{blog?.title}</Typography.Title>
 
               <div className="info_block">
@@ -50,7 +50,10 @@ const BlogOnePage = () => {
                 </span>
               </div>
 
+              {isLoading ? <Skeleton.Image active style={{ height: "300px", width: "400px" }} /> : null}
               <LazyLoadImage className="image" src={blog?.coverImageUrl} alt="Blog Image" effect="blur" />
+
+              {isLoading ? <Skeleton active /> : null}
               <Typography className="text_content">{blog?.content}</Typography>
             </div>
           </Col>
