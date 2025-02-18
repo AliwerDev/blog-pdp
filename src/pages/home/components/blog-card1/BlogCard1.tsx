@@ -21,6 +21,7 @@ const BlogCardWrapper = styled(motion.div)`
     width: 100%;
     object-fit: cover;
     border-radius: 7px;
+    min-height: 160px;
   }
 
   .content {
