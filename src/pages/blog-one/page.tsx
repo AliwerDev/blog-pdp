@@ -31,6 +31,7 @@ const BlogOnePage = () => {
               {tag}
             </span>
           ))}
+          <span className="tag">{blog?.category}</span>
         </div>
         <Row gutter={32}>
           <Col xs={24} lg={18}>
