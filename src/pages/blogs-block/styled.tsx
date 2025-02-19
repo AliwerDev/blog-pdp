@@ -4,15 +4,28 @@ const Styled = styled.div`
   width: 100%;
   height: 100%;
   padding: 20px 40px;
+  /* background: radial-gradient(black, transparent); */
 
   .container {
     max-width: 1180px;
     margin-inline: auto;
+
+    .swiper-wrapper {
+      align-items: stretch;
+
+      .swiper-slide {
+        height: unset;
+      }
+
+      .blog_card {
+        height: 100%;
+      }
+    }
   }
 
   .title {
     font-weight: 500;
-    font-size: 36px;
+    font-size: 38px;
   }
 
   .block_header {

@@ -76,7 +76,7 @@ const BlogCard: React.FC<BlogPost> = ({ id, coverImageUrl, content, category, ti
     window.parent.postMessage({ action: "blog-one", blogId: id }, "*");
   };
   return (
-    <BlogCardWrapper onClick={openBlogOne} variants={cardVariants}>
+    <BlogCardWrapper className="blog_card" onClick={openBlogOne} variants={cardVariants}>
       <div className="content">
         <Flex align="center" justify="space-between" className="card_header">
           <div className="tags">
