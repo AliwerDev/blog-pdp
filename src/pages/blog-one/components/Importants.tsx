@@ -47,7 +47,7 @@ const Styled = styled.div`
 const { Text } = Typography;
 
 const Importants = () => {
-  const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
+  const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/?database_id=19df4e0aaef380a0938ec4307b2b6b24") });
 
   const blogs = useMemo(() => {
     let data: BlogPost[] = parseNotionResponse(get(blogsData, "data", []));

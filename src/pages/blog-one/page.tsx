@@ -5,21 +5,21 @@ import { UserOutlined, CalendarOutlined } from "@ant-design/icons";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import Importants from "./components/Importants";
 import { useParams } from "react-router-dom";
-import { BlogPost, parseNotionResponse } from "utils/helpers";
-import { get } from "lodash";
+import { BlogPost, parseNotionPage } from "utils/helpers";
+import { get, isEmpty } from "lodash";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import axiosInstance from "services/axios";
+import NotionBlocks from "./components/NotionBlocks";
 
 const BlogOnePage = () => {
   const params = useParams();
-  const { data: blogsData, isLoading } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
+  const { data, isLoading } = useQuery({ queryKey: ["page-blocks", params.id], queryFn: async () => await axiosInstance.get(`https://notion-page.pdpuzinfo.workers.dev/?page_id=${params.id}`) });
 
   const blog = useMemo(() => {
-    let data: BlogPost[] = parseNotionResponse(get(blogsData, "data", []));
-    return data.find((blog) => blog.id === params.id);
-  }, [blogsData, params]);
+    return parseNotionPage(get(data, "data.page")) as BlogPost;
+  }, [data]);
 
   return (
     <Styled>
@@ -54,7 +54,9 @@ const BlogOnePage = () => {
               <LazyLoadImage className="image" src={blog?.coverImageUrl} alt="Blog Image" effect="blur" />
 
               {isLoading ? <Skeleton active /> : null}
-              <Typography className="text_content">{blog?.content}</Typography>
+              {!isEmpty(get(data, "data.blocks")) && <NotionBlocks blocks={get(data, "data.blocks", [])} />}
+
+              {/* <Typography className="text_content">{blog?.content}</Typography> */}
             </div>
           </Col>
           <Col xs={24} lg={6}>
