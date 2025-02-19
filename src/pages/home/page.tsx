@@ -9,7 +9,7 @@ import { parseNotionResponse } from "utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "services/axios";
 import { get, isEmpty, lowerCase } from "lodash";
-import SkeletonCard from "./components/SkeletonCard";
+// import SkeletonCard from "./components/SkeletonCard";
 
 const companies = [
   {
@@ -51,26 +51,34 @@ const listVariants = {
 
 const HomePage = () => {
   const [tags, setTags] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Hamma");
   const [activeTags, setSelectedTags] = useState<string[]>([]);
-  const { data: blogsData, isLoading } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
+  const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/") });
 
   const blogs = useMemo(() => {
     let data = parseNotionResponse(get(blogsData, "data", []));
 
     const getTags = () => {
-      const set = new Set<string>();
+      const tags = new Set<string>();
+      const categories = new Set<string>();
       data?.forEach((blog) => {
-        blog.tags.forEach((tag) => set.add(tag));
+        categories.add(blog.category);
+        blog.tags.forEach((tag) => tags.add(tag));
       });
 
-      return Array.from(set);
+      return [Array.from(tags), Array.from(categories)];
     };
-    setTags(getTags());
+
+    setTags(getTags()[0]);
+    setCategories(getTags()[1]);
+
     if (activeTab !== "Hamma") data = data.filter((blog) => blog?.tags?.find((t) => lowerCase(t) === lowerCase(activeTab)));
 
     if (!isEmpty(activeTags))
       data = data?.filter((blog) => {
+        if (activeTags.find((t) => lowerCase(t) === lowerCase(blog.category))) return true;
+
         for (const tag of blog.tags) {
           if (activeTags.find((t) => lowerCase(t) === lowerCase(tag))) return true;
         }
@@ -94,12 +102,12 @@ const HomePage = () => {
           <Col xs={24} lg={18}>
             <motion.div initial="hidden" animate="visible" variants={listVariants}>
               <Row gutter={[32, 32]} justify="start">
-                {isLoading &&
+                {/* {isLoading &&
                   new Array(4).fill("").map((_, i) => (
                     <Col xs={24} sm={12} lg={8} key={i}>
                       <SkeletonCard />
                     </Col>
-                  ))}
+                  ))} */}
 
                 {blogs.map((blog, index) => (
                   <Col xs={24} sm={12} lg={8} key={index}>
@@ -113,7 +121,7 @@ const HomePage = () => {
             </motion.div>
           </Col>
           <Col xs={12} lg={6}>
-            <SidebarFilter activeTags={activeTags} tags={tags} setTegs={setSelectedTags} />
+            <SidebarFilter activeTags={activeTags} tags={tags} categories={categories} setTegs={setSelectedTags} />
           </Col>
         </Row>
       </div>

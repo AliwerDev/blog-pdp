@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { get } from "lodash";
 import dayjs from "dayjs";
+import { BlogPost } from "utils/helpers";
 
 const BlogCardWrapper = styled(motion.div)`
   width: 100%;
@@ -64,25 +65,12 @@ const BlogCardWrapper = styled(motion.div)`
   }
 `;
 
-export type BlogPost = {
-  author: {
-    fullname: string;
-    avatarUrl: string;
-  };
-  title: string;
-  content: string;
-  coverImageUrl: string;
-  tags: string[];
-  date: string;
-  id: string;
-};
-
 const cardVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
 };
 
-const BlogCard: React.FC<BlogPost> = ({ id, content, author, coverImageUrl, date, tags, title }) => {
+const BlogCard: React.FC<BlogPost> = ({ id, category, content, author, coverImageUrl, date, tags, title }) => {
   const openBlogOne = () => {
     window.parent.postMessage({ action: "blog-one", blogId: id }, "*");
   };
@@ -97,6 +85,7 @@ const BlogCard: React.FC<BlogPost> = ({ id, content, author, coverImageUrl, date
               {tag}
             </span>
           ))}
+          <span className="tag">{category}</span>
         </div>
         <Typography.Paragraph ellipsis={{ rows: 2 }} className="title">
           {title}

@@ -4,9 +4,8 @@ import { Avatar, Flex, Typography } from "antd";
 import { UserOutlined, CalendarOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { BlogPost } from "../blog-card/BlogCard";
 import dayjs from "dayjs";
-import { get } from "lodash";
+import { BlogPost } from "utils/helpers";
 
 const BlogCardWrapper = styled(motion.div)`
   width: 100%;
@@ -72,7 +71,7 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
 };
 
-const BlogCard: React.FC<BlogPost> = ({ id, coverImageUrl, content, tags, title, author, date }) => {
+const BlogCard: React.FC<BlogPost> = ({ id, coverImageUrl, content, category, title, author, date }) => {
   const openBlogOne = () => {
     window.parent.postMessage({ action: "blog-one", blogId: id }, "*");
   };
@@ -82,7 +81,7 @@ const BlogCard: React.FC<BlogPost> = ({ id, coverImageUrl, content, tags, title,
         <Flex align="center" justify="space-between" className="card_header">
           <div className="tags">
             <div className="tags">
-              <span className="tag">{get(tags, "[0]")}</span>
+              <span className="tag">{category}</span>
             </div>
           </div>
           <span className="date">

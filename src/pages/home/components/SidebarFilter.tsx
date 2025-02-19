@@ -20,7 +20,7 @@ const Styled = styled.div`
 
 const { Title, Text } = Typography;
 
-const SidebarFilter = ({ tags, activeTags, setTegs }: { tags: string[]; activeTags: string[]; setTegs: (val: string[]) => void }) => {
+const SidebarFilter = ({ tags, activeTags, setTegs, categories }: { tags: string[]; activeTags: string[]; categories: string[]; setTegs: (val: string[]) => void }) => {
   const onChangeFilter = (event: any) => {
     if (event?.target?.checked) {
       setTegs([...activeTags, event?.target?.value]);
@@ -38,25 +38,21 @@ const SidebarFilter = ({ tags, activeTags, setTegs }: { tags: string[]; activeTa
           LOYIHALAR
         </Text>
         <Space direction="vertical" className="checkboxes">
-          {tags.map((tag) =>
-            tag.toLowerCase().startsWith("pdp") ? (
-              <Checkbox checked={activeTags.includes(tag)} onChange={onChangeFilter} value={tag} key={tag}>
-                {tag}
-              </Checkbox>
-            ) : null
-          )}
+          {tags.map((tag) => (
+            <Checkbox checked={activeTags.includes(tag)} onChange={onChangeFilter} value={tag} key={tag}>
+              {tag}
+            </Checkbox>
+          ))}
         </Space>
         <Text type="secondary" className="sub_title">
           KATEGORIYALAR
         </Text>
         <Space direction="vertical" className="checkboxes">
-          {tags.map((tag) =>
-            !tag.toLowerCase().startsWith("pdp") ? (
-              <Checkbox checked={activeTags.includes(tag)} onChange={onChangeFilter} value={tag} key={tag}>
-                {tag}
-              </Checkbox>
-            ) : null
-          )}
+          {categories.map((tag) => (
+            <Checkbox checked={activeTags.includes(tag)} onChange={onChangeFilter} value={tag} key={tag}>
+              {tag}
+            </Checkbox>
+          ))}
         </Space>
       </div>
     </Styled>

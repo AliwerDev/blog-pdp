@@ -2,11 +2,10 @@ import styled from "@emotion/styled";
 import { useQuery } from "@tanstack/react-query";
 import { Typography } from "antd";
 import { get } from "lodash";
-import { BlogPost } from "pages/home/components/blog-card/BlogCard";
 import { useMemo } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import axiosInstance from "services/axios";
-import { parseNotionResponse } from "utils/helpers";
+import { BlogPost, parseNotionResponse } from "utils/helpers";
 
 const Styled = styled.div`
   padding: 20px;

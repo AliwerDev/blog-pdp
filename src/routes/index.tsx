@@ -15,6 +15,7 @@ export default function Router() {
         { index: true, element: <HomePage /> },
         { path: "/blog/:id", element: <BlogOnePage /> },
         { path: "/blogs-block", element: <BlogsBlockPage /> },
+        { path: "/faq/:company", element: <BlogsBlockPage /> },
       ],
     },
     { path: "*", element: <Navigate to="/" replace /> },
