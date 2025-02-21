@@ -9,6 +9,7 @@ import { parseNotionResponse } from "utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "services/axios";
 import { get, isEmpty, lowerCase } from "lodash";
+import { useTranslation } from "react-i18next";
 // import SkeletonCard from "./components/SkeletonCard";
 
 const companies = [
@@ -50,6 +51,7 @@ const listVariants = {
 };
 
 const HomePage = () => {
+  const { t } = useTranslation();
   const [tags, setTags] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Hamma");
@@ -102,7 +104,7 @@ const HomePage = () => {
   return (
     <HomeStyled>
       <div className="container">
-        <Typography className="page_title">Blog</Typography>
+        <Typography className="page_title">{t("Group")}</Typography>
         <div className="tabs">
           {companies.map((item) => (
             <div onClick={() => setActiveTab(item.name)} className={`tab ${activeTab === item.name ? "active" : ""}`} key={item.name}>
