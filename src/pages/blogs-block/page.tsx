@@ -13,7 +13,18 @@ import { get } from "lodash";
 import axiosInstance from "services/axios";
 
 const BlogsBlockPage = () => {
-  const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion-api.pdp.uz/?database_id=19df4e0aaef380a0938ec4307b2b6b24") });
+  const { data: blogsData } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: async () =>
+      await axiosInstance.post("https://notion-api.pdp.uz/?database_id=19df4e0aaef380a0938ec4307b2b6b24", {
+        sorts: [
+          {
+            property: "Created time",
+            direction: "descending",
+          },
+        ],
+      }),
+  });
 
   const blogs = useMemo(() => {
     let data: BlogPost[] = parseNotionResponse(get(blogsData, "data", []));
