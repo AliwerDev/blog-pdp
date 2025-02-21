@@ -1,0 +1,68 @@
+<script defer>
+  $(document).ready(function () {
+    let translations = [
+      { selector: ".header_about_link", uz: "BIZ HAQIMIZDA", en: "ABOUT US" },
+      { selector: ".header_courses_link", uz: "KURSLAR", en: "COURSES" },
+      { selector: ".header_team_link", uz: "JAMOA", en: "TEAM" },
+      { selector: ".header_students_link", uz: "BITIRUVCHILARIMIZ", en: "GRADUATES" },
+      { selector: ".header_blog_link", uz: "BLOG", en: "BLOG" },
+      { selector: ".header_qabul_btn", uz: "QABUL", en: "ADMISSION" },
+    ];
+
+    let currentLang = "uz";
+
+    const uzBtn = $(".lang_uz");
+    const enBtn = $(".lang_en");
+
+    function updateLanguageButtons(selectedLang) {
+      if (!uzBtn.length || !enBtn.length) return;
+
+      if (selectedLang === "uz") {
+        uzBtn.addClass("active-lang").removeClass("inactive-lang");
+        enBtn.addClass("inactive-lang").removeClass("active-lang");
+      } else {
+        enBtn.addClass("active-lang").removeClass("inactive-lang");
+        uzBtn.addClass("inactive-lang").removeClass("active-lang");
+      }
+    }
+
+    function changeLanguage(lang) {
+      updateLanguageButtons(lang);
+      translations.forEach((item) => {
+        const elements = $(item.selector);
+        if (elements.length > 0) {
+          elements.each(function () {
+            $(this).text(item[lang]);
+          });
+        }
+      });
+    }
+
+    uzBtn.on("click", function () {
+      changeLanguage("uz");
+      uzBtn.css("color", "#00C508");
+      enBtn.css("color", "#00000030");
+    });
+
+    enBtn.on("click", function () {
+      changeLanguage("en");
+      uzBtn.css("color", "#00000030");
+      enBtn.css("color", "#00C508");
+    });
+  });
+</script>
+
+<style>
+  .lang_uz .tn-atom,
+  .lang_en .tn-atom {
+    cursor: pointer;
+    transition: all 0.3s linear;
+  }
+  .active-lang .tn-atom {
+    color: #00c508 !important;
+  }
+
+  .inactive-lang .tn-atom {
+    color: rgba(0, 0, 0, 0.188) !important;
+  }
+</style>

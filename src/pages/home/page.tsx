@@ -54,7 +54,7 @@ const HomePage = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Hamma");
   const [activeTags, setSelectedTags] = useState<string[]>([]);
-  const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion.pdp.uz/?database_id=19df4e0aaef380a0938ec4307b2b6b24") });
+  const { data: blogsData } = useQuery({ queryKey: ["blogs"], queryFn: async () => await axiosInstance.get("https://notion-api.pdp.uz/?database_id=19df4e0aaef380a0938ec4307b2b6b24") });
 
   const blogs = useMemo(() => {
     let data = parseNotionResponse(get(blogsData, "data", []));
