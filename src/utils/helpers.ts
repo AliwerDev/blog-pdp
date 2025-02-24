@@ -1,4 +1,5 @@
 import { get } from "lodash";
+import { Event } from "pages/events-block/components/EventMainCard";
 
 export type BlogPost = {
   id: string;
@@ -35,5 +36,21 @@ export function parseNotionPage(page: any): BlogPost {
     category: get(page, "properties.Categories.select.name", ""),
     date: get(page, "properties.Date.date.start", ""),
     url: get(page, "public_url", ""),
+  };
+}
+
+export function parseEventsData(response: any): Event[] {
+  return get(response, "results", []).map((page: any) => parseEventPage(page));
+}
+
+export function parseEventPage(page: any): Event {
+  return {
+    id: get(page, "id", ""),
+    title: get(page, "properties.Title.title[0].plain_text", ""),
+    description: get(page, "properties.Description.rich_text[0].plain_text", ""),
+    date: get(page, "properties.Date.date.start", ""),
+    location: get(page, "properties.Manzil.select.name", ""),
+    capacity: parseInt(get(page, "properties.Capacity.rich_text[0].plain_text", "0"), 0),
+    coverImage: get(page, "properties.Cover.files[0].file.url", ""),
   };
 }

@@ -3,7 +3,8 @@ import styled from "@emotion/styled";
 const Styled = styled.div`
   width: 100%;
   height: 100%;
-  padding: 20px 40px;
+  background: #f8f8f8;
+  padding-inline: 30px;
 
   .container {
     max-width: 1180px;
@@ -17,6 +18,10 @@ const Styled = styled.div`
       font-weight: 500;
       font-size: 38px;
     }
+  }
+
+  @media (max-width: 480px) {
+    padding-inline: 20px;
   }
 `;
 

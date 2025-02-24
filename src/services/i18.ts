@@ -21,7 +21,10 @@ const loadTranslations = async (lang: string): Promise<Record<string, string>> =
 };
 
 i18n.use(initReactI18next).init({
-  resources: {},
+  resources: {
+    uz: { translation: {} },
+    en: { translation: {} },
+  },
   lng: "uz",
   fallbackLng: "en",
   interpolation: { escapeValue: false },
@@ -29,8 +32,14 @@ i18n.use(initReactI18next).init({
 
 export const changeLanguage = async (lang: string): Promise<void> => {
   const translations = await loadTranslations(lang);
-  i18n.addResourceBundle(lang, "translation", translations, true, true);
-  i18n.changeLanguage(lang);
+
+  if (!i18n.hasResourceBundle(lang, "translation")) {
+    i18n.addResources(lang, "translation", translations);
+  } else {
+    i18n.addResourceBundle(lang, "translation", translations, true, true);
+  }
+
+  await i18n.changeLanguage(lang);
 };
 
 export default i18n;
