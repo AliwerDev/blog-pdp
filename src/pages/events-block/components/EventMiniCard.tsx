@@ -2,7 +2,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import moment from "moment";
-import { Col, Row } from "antd";
+import { Col, Row, Typography } from "antd";
 
 interface Event {
   title: string;
@@ -62,7 +62,9 @@ const EventMiniCard: React.FC<{ event: Event }> = ({ event }) => {
           </Col>
           <Col xs={10} md={24} lg={10}>
             <div className="event-content">
-              <h3 className="event-title">{event?.title}</h3>
+              <Typography.Paragraph ellipsis={{ rows: 4 }} className="event-title">
+                {event?.title}
+              </Typography.Paragraph>
               <div className="event-details">{moment(event?.date).format("DD MMMM, YYYY")}</div>
             </div>
           </Col>
