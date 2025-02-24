@@ -1,14 +1,13 @@
-import { Col, Row } from "antd";
+import { Col, Row, Typography } from "antd";
 import BlogCard from "./components/blog-card/BlogCard";
 import HomeStyled from "./styled";
 import { motion } from "framer-motion";
-import Typography from "antd/es/typography/Typography";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import SidebarFilter from "./components/SidebarFilter";
 import { parseNotionResponse } from "utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "services/axios";
-import { get, isEmpty, lowerCase } from "lodash";
+import { get, isEmpty, isEqual, lowerCase } from "lodash";
 
 const companies = [
   {
@@ -112,7 +111,21 @@ const HomePage = () => {
         <Row gutter={[32, 32]} justify="start">
           <Col xs={24} lg={18}>
             <motion.div initial="hidden" animate="visible" variants={listVariants}>
-              <Row gutter={[32, 32]} justify="start">
+              <Row gutter={[32, 15]} justify="start">
+                {categories.map((category, index) => (
+                  <React.Fragment key={category}>
+                    <Col className="pt-4" xs={24}>
+                      <Typography.Text className="subtitle">{category}</Typography.Text>
+                    </Col>
+                    {blogs
+                      .filter((blog) => isEqual(blog.category, category))
+                      .map((blog, index) => (
+                        <Col xs={24} sm={12} lg={8} key={index}>
+                          <BlogCard {...blog} />
+                        </Col>
+                      ))}
+                  </React.Fragment>
+                ))}
                 {/* {isLoading &&
                   new Array(4).fill("").map((_, i) => (
                     <Col xs={24} sm={12} lg={8} key={i}>
@@ -120,11 +133,6 @@ const HomePage = () => {
                     </Col>
                   ))} */}
 
-                {blogs.map((blog, index) => (
-                  <Col xs={24} sm={12} lg={8} key={index}>
-                    <BlogCard {...blog} />
-                  </Col>
-                ))}
                 {/* <Col xs={24}>
                 <div className="load_more">Yana ochish</div>
               </Col> */}

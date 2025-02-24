@@ -22,6 +22,11 @@ const HomeStyled = styled.div`
     margin-bottom: 35px;
   }
 
+  .subtitle {
+    font-size: 18px;
+    font-weight: 400;
+  }
+
   .tabs {
     display: flex;
     justify-content: center;
