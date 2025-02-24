@@ -25,7 +25,7 @@ export default function App() {
         setHeight(entry.contentRect.height);
       }
     });
-    const body = document.querySelector("body");
+    const body = document.querySelector("html");
     if (body) observer.observe(body);
 
     return () => {
