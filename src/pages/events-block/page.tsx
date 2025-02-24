@@ -19,6 +19,12 @@ const EventsBlock = () => {
             direction: "descending",
           },
         ],
+        filter: {
+          property: "Companies",
+          multi_select: {
+            contains: "PDP Academy",
+          },
+        },
       }),
   });
 
