@@ -37,14 +37,14 @@ const Wrapper = styled.div`
   }
 
   .event-title {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
     margin: 0;
     line-height: 1.3;
   }
 
   .event-details {
-    font-size: 14px;
+    font-size: 13px;
     color: #00000080;
     display: flex;
     flex-direction: column;

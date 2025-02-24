@@ -37,7 +37,9 @@ const EventsBlock = () => {
     <Styled>
       <div className="container">
         <Flex justify="space-between" className="block_header">
-          <Typography.Title className="title">Events tadbirlar</Typography.Title>
+          <Typography.Title className="title">
+            Events | <span>Tadbirlar</span>
+          </Typography.Title>
           {/* <Button className="">Open all</Button> */}
         </Flex>
 

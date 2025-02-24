@@ -34,7 +34,7 @@ const Wrapper = styled.div`
   }
 
   .event-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 500;
     margin: 0;
     margin-top: 10px;
@@ -42,14 +42,14 @@ const Wrapper = styled.div`
   }
 
   .event-description {
-    font-size: 14px;
+    font-size: 13px;
     color: #555;
     font-weight: 300;
     margin: 10px 0;
   }
 
   .event-details {
-    font-size: 14px;
+    font-size: 13px;
     color: #333;
     display: flex;
     justify-content: space-between;

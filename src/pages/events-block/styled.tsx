@@ -17,6 +17,10 @@ const Styled = styled.div`
     .title {
       font-weight: 500;
       font-size: 38px;
+
+      span {
+        color: rgb(0, 197, 8);
+      }
     }
   }
 
