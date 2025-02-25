@@ -4,15 +4,8 @@ import styled from "@emotion/styled";
 import moment from "moment";
 import { Col, Row, Typography } from "antd";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-
-interface Event {
-  title: string;
-  description: string;
-  date: string; // ISO 8601 format
-  location: string;
-  capacity: number;
-  coverImage: string;
-}
+import { Event } from "./EventMainCard";
+import { Link } from "react-router-dom";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -55,23 +48,25 @@ const Wrapper = styled.div`
 
 const EventMiniCard: React.FC<{ event: Event }> = ({ event }) => {
   return (
-    <Wrapper style={{ height: "100%" }}>
-      <div style={{ height: "100%" }} className="event-card">
-        <Row style={{ height: "100%" }} gutter={[16, 16]}>
-          <Col xs={14} md={24} lg={14}>
-            <LazyLoadImage className="event-image" src={event?.coverImage} alt={event?.title} effect="blur" />
-          </Col>
-          <Col xs={10} md={24} lg={10}>
-            <div className="event-content">
-              <Typography.Paragraph ellipsis={{ rows: 4 }} className="event-title">
-                {event?.title}
-              </Typography.Paragraph>
-              <div className="event-details">{moment(event?.date).format("DD MMMM, YYYY")}</div>
-            </div>
-          </Col>
-        </Row>
-      </div>
-    </Wrapper>
+    <Link to={event?.url}>
+      <Wrapper style={{ height: "100%" }}>
+        <div style={{ height: "100%" }} className="event-card">
+          <Row style={{ height: "100%" }} gutter={[16, 16]}>
+            <Col xs={14} md={24} lg={14}>
+              <LazyLoadImage className="event-image" src={event?.coverImage} alt={event?.title} effect="blur" />
+            </Col>
+            <Col xs={10} md={24} lg={10}>
+              <div className="event-content">
+                <Typography.Paragraph ellipsis={{ rows: 4 }} className="event-title">
+                  {event?.title}
+                </Typography.Paragraph>
+                <div className="event-details">{moment(event?.date).format("DD MMMM, YYYY")}</div>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </Wrapper>
+    </Link>
   );
 };
 

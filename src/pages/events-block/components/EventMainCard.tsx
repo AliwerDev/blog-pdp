@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import moment from "moment";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Link } from "react-router-dom";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -167,54 +168,57 @@ export interface Event {
   location: string;
   capacity: number;
   coverImage: string;
+  url: string;
 }
 
 const EventMainCard: React.FC<{ event: Event }> = ({ event }) => {
   return (
-    <Wrapper>
-      <div className="event-card">
-        <LazyLoadImage className="event-image" src={event?.coverImage} alt={event?.title} effect="blur" />
-        <div className="event-content">
-          <div className="text-content">
-            <h3 className="event-title">{event?.title}</h3>
-            <p className="event-description">{event?.description}</p>
-          </div>
+    <Link to={event?.url}>
+      <Wrapper>
+        <div className="event-card">
+          <LazyLoadImage className="event-image" src={event?.coverImage} alt={event?.title} effect="blur" />
+          <div className="event-content">
+            <div className="text-content">
+              <h3 className="event-title">{event?.title}</h3>
+              <p className="event-description">{event?.description}</p>
+            </div>
 
-          <div className="event-details">
-            <div className="event-detail">
-              <img src="/icons/date.svg" alt="clock" />
-              <div className="right">
-                <span className="label red">TADBIR KUNI</span>
-                <span className="value">{moment(event?.date).format("DD MMMM")}</span>
+            <div className="event-details">
+              <div className="event-detail">
+                <img src="/icons/date.svg" alt="clock" />
+                <div className="right">
+                  <span className="label red">TADBIR KUNI</span>
+                  <span className="value">{moment(event?.date).format("DD MMMM")}</span>
+                </div>
               </div>
-            </div>
-            <div className="event-detail">
-              <img src="/icons/earch.svg" alt="clock" />
-              <div className="right">
-                <span className="label blue">MANZIL</span>
-                <span className="value">{event?.location}</span>
+              <div className="event-detail">
+                <img src="/icons/earch.svg" alt="clock" />
+                <div className="right">
+                  <span className="label blue">MANZIL</span>
+                  <span className="value">{event?.location}</span>
+                </div>
               </div>
-            </div>
-            <div className="event-detail">
-              <img src="/icons/users.svg" alt="clock" />
-              <div className="right">
-                <span className="label orange">SIG'IMI</span>
-                <span className="value">
-                  {event?.capacity} <span>nafar</span>
-                </span>
+              <div className="event-detail">
+                <img src="/icons/users.svg" alt="clock" />
+                <div className="right">
+                  <span className="label orange">SIG'IMI</span>
+                  <span className="value">
+                    {event?.capacity} <span>nafar</span>
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="event-detail">
-              <img src="/icons/clock.svg" alt="clock" />
-              <div className="right">
-                <span className="label green">TADBIR VAQTI</span>
-                <span className="value">{moment(event?.date).format("HH:mm")}</span>
+              <div className="event-detail">
+                <img src="/icons/clock.svg" alt="clock" />
+                <div className="right">
+                  <span className="label green">TADBIR VAQTI</span>
+                  <span className="value">{moment(event?.date).format("HH:mm")}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </Wrapper>
+      </Wrapper>
+    </Link>
   );
 };
 

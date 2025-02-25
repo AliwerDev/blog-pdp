@@ -52,5 +52,6 @@ export function parseEventPage(page: any): Event {
     location: get(page, "properties.Manzil.select.name", ""),
     capacity: parseInt(get(page, "properties.Capacity.rich_text[0].plain_text", "0"), 0),
     coverImage: get(page, "properties.Cover.files[0].file.url", ""),
+    url: get(page, "properties.Link.rich_text[0].plain_text", ""),
   };
 }
