@@ -4,6 +4,7 @@ import { App as AntdApp } from "antd";
 import Router from "./routes";
 import AntProvider from "theme/ant-provider";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +18,7 @@ const queryClient = new QueryClient({
 });
 export default function App() {
   const [height, setHeight] = useState(0);
+  const location = useLocation();
 
   // Listen for changes to the document body height.
   useEffect(() => {
@@ -38,10 +40,12 @@ export default function App() {
     const isIframe = window.self !== window.top;
     if (isIframe) {
       document.documentElement.style.overflow = "hidden";
-      window.parent.postMessage(height, "*");
+      console.log("Sending height", height, location.pathname);
+      window.parent.postMessage({ action: "SET_HEIGHT", pathname: location.pathname, height }, "*");
     } else {
       document.documentElement.style.overflow = "unset";
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [height]);
 
   return (
