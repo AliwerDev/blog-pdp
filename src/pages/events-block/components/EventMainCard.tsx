@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import moment from "moment";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -172,7 +173,7 @@ const EventMainCard: React.FC<{ event: Event }> = ({ event }) => {
   return (
     <Wrapper>
       <div className="event-card">
-        <img className="event-image" src={event?.coverImage} alt={event?.title} />
+        <LazyLoadImage className="event-image" src={event?.coverImage} alt={event?.title} effect="blur" />
         <div className="event-content">
           <div className="text-content">
             <h3 className="event-title">{event?.title}</h3>

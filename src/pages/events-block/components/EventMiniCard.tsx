@@ -3,6 +3,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import moment from "moment";
 import { Col, Row, Typography } from "antd";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 interface Event {
   title: string;
@@ -58,7 +59,7 @@ const EventMiniCard: React.FC<{ event: Event }> = ({ event }) => {
       <div style={{ height: "100%" }} className="event-card">
         <Row style={{ height: "100%" }} gutter={[16, 16]}>
           <Col xs={14} md={24} lg={14}>
-            <img className="event-image" src={event?.coverImage} alt={event?.title} />
+            <LazyLoadImage className="event-image" src={event?.coverImage} alt={event?.title} effect="blur" />
           </Col>
           <Col xs={10} md={24} lg={10}>
             <div className="event-content">
